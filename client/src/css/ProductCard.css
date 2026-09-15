@@ -1,0 +1,96 @@
+.product-card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(15, 76, 129, 0.05);
+}
+
+.product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.product-card:hover img {
+    transform: scale(1.03);
+}
+
+.product-info {
+    padding: 24px;
+    text-align: left;
+}
+
+.product-info h3 {
+    margin: 8px 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+.rating {
+    color: var(--color-accent);
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.product-info h4 {
+    margin: 16px 0;
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    font-weight: 400;
+}
+
+.product-info button {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--color-primary);
+    font-weight: 500;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.product-info button:hover {
+    background: var(--color-primary);
+    color: var(--color-surface);
+}
+
+.wishlist {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--color-text-muted);
+    z-index: 10;
+    transition: all 0.3s ease;
+}
+
+.wishlist:hover {
+    background: var(--color-accent);
+    color: var(--color-surface);
+    border-color: var(--color-accent);
+    transform: scale(1.1);
+}

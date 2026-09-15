@@ -1,0 +1,136 @@
+.footer {
+    background-color: var(--color-bg);
+    color: var(--color-text-main);
+    padding: 80px 8% 30px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Logo */
+.footer-logo {
+    font-size: 34px;
+    font-weight: 500;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    font-family: var(--font-heading);
+}
+
+.footer-logo span {
+    display: block;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    margin-top: 5px;
+    font-family: var(--font-body);
+}
+
+/* Text */
+.footer-text {
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    max-width: 320px;
+}
+
+/* Social Icons */
+.social-icons {
+    display: flex;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.social-icons i {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.35s ease;
+}
+
+.social-icons i:hover {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border-color: var(--color-primary);
+    transform: translateY(-3px);
+}
+
+/* Heading */
+.footer h5 {
+    margin-bottom: 22px;
+    font-size: 18px;
+    color: var(--color-primary);
+    font-weight: 500;
+}
+
+/* Links */
+.footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.footer ul li a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+    padding: 4px 0;
+}
+
+.footer ul li a:hover {
+    color: var(--color-accent);
+    transform: translateX(4px);
+}
+
+/* Contact */
+.footer p {
+    color: var(--color-text-muted);
+    line-height: 1.9;
+    margin-bottom: 8px;
+}
+
+.footer p i {
+    color: var(--color-accent);
+    margin-right: 10px;
+    width: 18px;
+}
+
+/* Divider */
+.footer hr {
+    border-color: var(--color-border);
+    margin: 45px 0 25px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Bottom */
+.footer-bottom {
+    text-align: center;
+}
+
+.footer-bottom p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 14px;
+}
+
+.footer-bottom span {
+    display: block;
+    margin-top: 10px;
+    color: var(--color-primary);
+    font-size: 13px;
+    opacity: 0.7;
+}
+
+/* Responsive */
+@media(max-width: 768px) {
+    .footer { text-align: center; }
+    .footer-text { margin: auto; }
+    .social-icons { justify-content: center; }
+    .footer h5 { margin-top: 40px; }
+}

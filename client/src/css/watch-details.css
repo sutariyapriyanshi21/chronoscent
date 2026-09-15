@@ -1,0 +1,179 @@
+/* =========================================
+   WATCH DETAILS PAGE
+========================================= */
+
+.watch-details-page {
+  background: transparent;
+  min-height: 70vh;
+}
+
+
+/* =========================================
+   BACK LINK
+========================================= */
+
+.watch-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #0f4c81;
+  text-decoration: none;
+
+  margin-bottom: 20px;
+
+  transition: 0.3s;
+}
+
+.watch-back-link:hover {
+  color: #032761;
+}
+
+
+/* =========================================
+   PRODUCT IMAGE
+========================================= */
+
+.watch-details-image {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 550px;
+  position: relative;
+}
+
+.watch-hero-img {
+  max-height: 500px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.watch-details-image:hover .watch-hero-img {
+  transform: scale(1.02);
+}
+
+
+/* =========================================
+   PRODUCT INFORMATION
+========================================= */
+
+.watch-details-brand {
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.watch-details-name {
+  color: var(--color-text-main);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 10px;
+}
+
+.watch-details-model {
+  color: var(--color-text-muted);
+}
+
+.watch-details-rating {
+  color: var(--color-accent);
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.watch-details-price {
+  color: var(--color-text-main);
+}
+
+.watch-details-description {
+  color: var(--color-text-muted);
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+
+/* =========================================
+   SPECIFICATIONS
+========================================= */
+
+.watch-specifications {
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  margin-top: 30px;
+}
+
+.watch-specifications div {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.watch-specifications div:last-child {
+  border-bottom: none;
+}
+
+.watch-specifications strong {
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.watch-specifications span {
+  color: var(--color-text-muted);
+}
+
+
+/* =========================================
+   ACTIONS
+========================================= */
+.watch-details-page .btn-primary {
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.watch-details-page .btn-outline-primary {
+  width: 48px;
+  height: 48px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.watch-details-page .btn-outline-primary:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-surface);
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 767.98px) {
+
+  .watch-details-name {
+    font-size: 28px !important;
+  }
+
+  .watch-details-price {
+    font-size: 24px !important;
+  }
+
+  .watch-details-image {
+    min-height: 350px;
+    padding: 20px;
+  }
+
+  .watch-hero-img {
+    max-height: 300px;
+  }
+
+}

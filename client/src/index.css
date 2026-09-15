@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  /* Premium Cloud Palette */
+  --color-primary: #0F4C81; /* Deep Cloud Blue */
+  --color-primary-light: #165A95; 
+  --color-accent: #7BAFD4; /* Soft Sky Blue */
+  --color-accent-hover: #57C7FF;
+  --color-bg: #FFFFFF; /* Crisp White */
+  --color-surface: #F8FAFC; /* Very soft airy gray/blue */
+  --color-text-main: #1F2937;
+  --color-text-muted: #64748B;
+  --color-border: #E2E8F0;
+
+  /* Typography */
+  --font-heading: 'Playfair Display', serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  margin-top: 0;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

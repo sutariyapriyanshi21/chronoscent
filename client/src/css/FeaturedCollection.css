@@ -1,0 +1,104 @@
+.featured-collections {
+    background-color: var(--color-bg);
+    padding: 70px 8% 100px;
+}
+
+/* Section Heading */
+.section-title {
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.section-title h2 {
+    color: var(--color-primary);
+    font-size: clamp(36px, 4vw, 44px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    margin-bottom: 15px;
+}
+
+.section-title p {
+    color: var(--color-text-muted);
+    max-width: 650px;
+    font-size: 1.1rem;
+    margin: auto;
+    line-height: 1.8;
+}
+
+/* Cards */
+.collection-grid {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.collection-card {
+    width: 480px;
+    background: var(--color-surface);
+    border-radius: 4px;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    border: 1px solid var(--color-border);
+}
+
+.collection-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(15, 76, 129, 0.08);
+}
+
+.collection-card img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+    transition: transform 0.8s ease;
+}
+
+.collection-card:hover img {
+    transform: scale(1.03);
+}
+
+.collection-content {
+    padding: 35px;
+    text-align: center;
+}
+
+.collection-content h3 {
+    color: var(--color-primary);
+    font-size: 1.8rem;
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+.collection-content p {
+    color: var(--color-text-muted);
+    line-height: 1.8;
+    margin-bottom: 30px;
+}
+
+.collection-content button {
+    background: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    min-width: 200px;
+    padding: 14px 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.3s ease;
+}
+
+.collection-content button:hover {
+    background: var(--color-primary);
+    color: var(--color-surface);
+}
+
+@media(max-width: 768px) {
+    .collection-card {
+        width: 100%;
+    }
+}

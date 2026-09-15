@@ -1,0 +1,29 @@
+.watch-search {
+    background: #111111;
+}
+
+.search-box .input-group-text {
+    background: #ffffff;
+    border: none;
+    color: #032761;
+    padding-left: 18px;
+}
+
+.search-box .form-control {
+    border: none;
+    padding: 14px 16px;
+    box-shadow: none;
+}
+
+.sort-select {
+    padding: 14px 16px;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.search-box,
+.sort-select {
+    border-radius: 8px;
+    overflow: hidden;
+}

@@ -1,0 +1,64 @@
+.why-section {
+    background-color: var(--color-bg);
+    padding: 90px 8% 50px;
+    color: var(--color-text-main);
+}
+
+.why-section h2 {
+    font-size: clamp(32px, 4vw, 42px);
+    margin-bottom: 20px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+.why-section p {
+    color: var(--color-text-muted);
+    font-size: 1.1rem;
+    max-width: 600px;
+}
+
+.feature-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 40px 25px;
+    text-align: center;
+    transition: all 0.4s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--color-accent);
+    box-shadow: 0 10px 30px rgba(15, 76, 129, 0.05);
+}
+
+.feature-card i {
+    font-size: 40px;
+    color: var(--color-primary);
+    margin-bottom: 24px;
+    transition: 0.35s ease;
+}
+
+.feature-card:hover i {
+    color: var(--color-accent);
+    transform: scale(1.1);
+}
+
+.feature-card h4 {
+    margin-bottom: 16px;
+    color: var(--color-primary);
+    font-size: 1.25rem;
+    font-weight: 500;
+    transition: 0.35s ease;
+}
+
+.feature-card:hover h4 {
+    color: var(--color-accent);
+}
+
+.feature-card p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
