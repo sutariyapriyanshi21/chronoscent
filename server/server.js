@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const Watch = require('./models/Watch');
 const Fragrance = require('./models/Fragerence');
 const Order = require('./models/Order');
+const User = require('./models/User'); // Added User model for authentication
 
 const app = express();
 
@@ -146,6 +147,71 @@ app.get('/api/orders', async (req, res) => {
         res.json(orders);
     } catch (error) {
         res.status(500).json({ message: "Error fetching orders" });
+    }
+});
+
+// ==========================================
+// AUTHENTICATION ROUTES (Student Level - Simple)
+// ==========================================
+
+// Register a new user
+app.post('/api/register', async (req, res) => {
+    try {
+        // Check if user already exists
+        const existingUser = await User.findOne({ email: req.body.email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User with this email already exists" });
+        }
+
+        // Create new user (saving password as plain text for simplicity, usually you would hash it)
+        const newUser = new User(req.body);
+        await newUser.save();
+        
+        res.status(201).json({ message: "User registered successfully", user: { name: newUser.name, email: newUser.email } });
+    } catch (error) {
+        res.status(500).json({ message: "Error registering user", error });
+    }
+});
+
+// Login a user
+app.post('/api/login', async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find the user by email
+        const user = await User.findOne({ email });
+
+        // If user doesn't exist or password doesn't match
+        if (!user || user.password !== password) {
+            return res.status(401).json({ message: "Invalid email or password" });
+        }
+
+        // Login successful
+        res.json({ message: "Login successful", user: { name: user.name, email: user.email } });
+    } catch (error) {
+        res.status(500).json({ message: "Error logging in", error });
+    }
+});
+
+// Reset Password (Student level - simple email check)
+app.put('/api/reset-password', async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        // Find the user by email and update their password
+        const user = await User.findOneAndUpdate(
+            { email: email }, 
+            { password: newPassword }, 
+            { new: true } // Returns the updated document
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "No account found with this email" });
+        }
+
+        res.json({ message: "Password updated successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error resetting password", error });
     }
 });
 

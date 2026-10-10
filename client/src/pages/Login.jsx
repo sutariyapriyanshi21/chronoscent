@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/auth.css";
 
 function Login() {
@@ -9,9 +9,10 @@ function Login() {
   
   // 2. Create an error state to show red text if something goes wrong
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // 3. This function runs when the user clicks "Sign In"
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Stops the page from refreshing
     setError(""); // Clear any old errors
 
@@ -26,9 +27,32 @@ function Login() {
       return;
     }
 
-    // If validation passes, we would normally send data to backend here
-    console.log("Login successful with:", { email, password });
-    alert("Validation passed! Ready to send to backend.");
+    // Send login request to backend
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Clear the form FIRST so the user sees it empty
+        setEmail("");
+        setPassword("");
+        
+        // Wait a tiny bit (100ms) for React to update the screen, THEN show alert and navigate
+        setTimeout(() => {
+          alert(`Welcome back, ${data.user.name}!`);
+          navigate("/"); // Redirect to Home page
+        }, 100);
+      } else {
+        setError(data.message || "Invalid email or password.");
+      }
+    } catch (err) {
+      setError("Cannot connect to server. Is the backend running?");
+    }
   };
 
   return (
@@ -43,7 +67,7 @@ function Login() {
         {/* Display the error message if it exists */}
         {error && <div className="alert alert-danger p-2 text-center" style={{fontSize: '0.9rem'}}>{error}</div>}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
           
           <div className="form-group">
             <label htmlFor="email">Email Address</label>
@@ -55,6 +79,7 @@ function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required 
+              autoComplete="off"
             />
           </div>
 
@@ -68,6 +93,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required 
+              autoComplete="new-password"
             />
           </div>
 
@@ -76,7 +102,7 @@ function Login() {
               <input type="checkbox" id="remember" className="me-2" />
               <label htmlFor="remember" className="d-inline fw-normal text-muted mb-0">Remember me</label>
             </div>
-            <Link to="#">Forgot Password?</Link>
+            <Link to="/forgot-password">Forgot Password?</Link>
           </div>
 
           <button type="submit" className="auth-btn">

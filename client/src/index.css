@@ -37,3 +37,15 @@ a {
   text-decoration: none;
   color: inherit;
 }
+
+/* Hide navigation and extra elements when printing (e.g. the Virtual Receipt) */
+@media print {
+  nav, header, .navbar, .footer, footer {
+    display: none !important;
+  }
+  
+  /* Ensure the background stays white when printing */
+  body {
+    background-color: white !important;
+  }
+}

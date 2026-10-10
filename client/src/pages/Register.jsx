@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../css/auth.css";
 
 function Register() {
@@ -11,9 +11,10 @@ function Register() {
   
   // 2. Create an error state to show red text if something goes wrong
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   // 3. This function runs when the user clicks "Create Account"
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Stops the page from refreshing
     setError(""); // Clear any old errors
 
@@ -33,9 +34,34 @@ function Register() {
       return;
     }
 
-    // If validation passes, we would normally send data to backend here
-    console.log("Registration successful with:", { name, email, password });
-    alert("Validation passed! Ready to create account.");
+    // Send data to backend
+    try {
+      const response = await fetch("http://127.0.0.1:5000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Clear the form fields FIRST so the user sees them empty
+        setName("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        
+        // Wait a tiny bit (100ms) for React to update the screen, THEN show alert and navigate
+        setTimeout(() => {
+          alert("Account created successfully! You can now log in.");
+          navigate("/login"); // Redirect to login page
+        }, 100);
+      } else {
+        setError(data.message || "Failed to register.");
+      }
+    } catch (err) {
+      setError("Cannot connect to server. Is the backend running?");
+    }
   };
 
   return (
@@ -50,7 +76,7 @@ function Register() {
         {/* Display the error message if it exists */}
         {error && <div className="alert alert-danger p-2 text-center" style={{fontSize: '0.9rem'}}>{error}</div>}
 
-        <form className="auth-form" onSubmit={handleSubmit}>
+        <form className="auth-form" onSubmit={handleSubmit} autoComplete="off">
           
           <div className="form-group">
             <label htmlFor="name">Full Name</label>
@@ -62,6 +88,7 @@ function Register() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required 
+              autoComplete="off"
             />
           </div>
 
@@ -75,6 +102,7 @@ function Register() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required 
+              autoComplete="off"
             />
           </div>
 
@@ -88,6 +116,7 @@ function Register() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required 
+              autoComplete="new-password"
             />
           </div>
 
@@ -101,6 +130,7 @@ function Register() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required 
+              autoComplete="new-password"
             />
           </div>
 

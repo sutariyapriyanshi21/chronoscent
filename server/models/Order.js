@@ -13,7 +13,8 @@ const orderSchema = new mongoose.Schema({
         email: { type: String, required: true },
         address: { type: String, required: true },
         city: { type: String, required: true },
-        zip: { type: String, required: true }
+        zip: { type: String, required: true },
+        paymentMethod: { type: String, default: "Cash on Delivery" }
     },
     orderItems: [orderItemSchema],
     totalAmount: { type: Number, required: true },

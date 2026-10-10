@@ -34,8 +34,12 @@ function GlobalSearch({ isOpen, onClose }) {
 
     const term = searchTerm.toLowerCase();
 
+    const isWatchKeyword = term === 'watch' || term === 'watches';
+    const isFragranceKeyword = ['fragrance', 'fragrances', 'perfume', 'perfumes', 'cologne'].includes(term);
+
     const matchedWatches = watches
       .filter((w) => 
+        isWatchKeyword ||
         w.name.toLowerCase().includes(term) || 
         w.brand.toLowerCase().includes(term)
       )
@@ -43,6 +47,7 @@ function GlobalSearch({ isOpen, onClose }) {
 
     const matchedFragrances = fragrances
       .filter((f) => 
+        isFragranceKeyword ||
         f.name.toLowerCase().includes(term) || 
         f.brand.toLowerCase().includes(term)
       )

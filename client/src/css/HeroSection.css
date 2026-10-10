@@ -115,10 +115,7 @@
 
 /* Scroll indicator */
 .scroll-down {
-  position: absolute;
-  bottom: 40px;
-  left: 5%;
-  z-index: 2;
+  margin-top: 60px;
   color: var(--color-surface);
   font-size: 1.5rem;
   opacity: 0.7;
@@ -133,7 +130,6 @@
 }
 
 @keyframes bounce {
-
   0%,
   100% {
     transform: translateY(0);
@@ -166,22 +162,5 @@
     flex-direction: column;
     width: 100%;
     max-width: 300px;
-  }
-
-  .scroll-down {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  @keyframes bounce {
-
-    0%,
-    100% {
-      transform: translate(-50%, 0);
-    }
-
-    50% {
-      transform: translate(-50%, 10px);
-    }
   }
 }

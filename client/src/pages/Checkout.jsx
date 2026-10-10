@@ -12,7 +12,7 @@ function Checkout() {
     address: "",
     city: "",
     zip: "",
-    cardNumber: ""
+    paymentMethod: "Cash on Delivery" // Automatically set to COD
   });
 
   const handleChange = (e) => {
@@ -24,7 +24,14 @@ function Checkout() {
     
     // Prepare data matching our Mongoose Schema
     const orderData = {
-      customerInfo: formData,
+      customerInfo: {
+        name: formData.name,
+        email: formData.email,
+        address: formData.address,
+        city: formData.city,
+        zip: formData.zip,
+        paymentMethod: formData.paymentMethod
+      },
       orderItems: cartItems.map(item => ({
         name: item.name,
         price: item.price,
@@ -42,9 +49,9 @@ function Checkout() {
       });
 
       if (response.ok) {
-        alert("Order successfully placed! Thank you for shopping with Chronoscent Elite.");
         clearCart();
-        navigate("/"); // Redirect to home
+        // Redirect to Virtual Receipt page, passing the order data along
+        navigate("/order-success", { state: { orderData: orderData } });
       } else {
         alert("Failed to place order. Please try again.");
       }
@@ -71,7 +78,7 @@ function Checkout() {
         <div className="row g-5">
           <div className="col-lg-8">
             <div className="card shadow-sm border-0 p-4">
-              <h3 className="mb-4">Shipping & Billing Information</h3>
+              <h3 className="mb-4">Shipping Information</h3>
               <form onSubmit={handleSubmit}>
                 
                 <div className="row g-3 mb-3">
@@ -101,14 +108,19 @@ function Checkout() {
                   </div>
                 </div>
 
-                <h4 className="mb-3">Payment Details</h4>
-                <div className="mb-4">
-                  <label className="form-label">Credit Card Number</label>
-                  <input type="text" className="form-control" name="cardNumber" placeholder="xxxx-xxxx-xxxx-xxxx" required onChange={handleChange} />
+                <h4 className="mb-3">Payment Method</h4>
+                <div className="mb-4 p-3 border rounded bg-light">
+                  <div className="form-check">
+                    <input className="form-check-input" type="radio" name="paymentMethod" id="cod" checked readOnly />
+                    <label className="form-check-label fw-bold" htmlFor="cod">
+                      Cash on Delivery (COD)
+                    </label>
+                    <p className="text-muted small mb-0 mt-1">Pay with cash when your order arrives at your doorstep.</p>
+                  </div>
                 </div>
 
                 <button type="submit" className="btn btn-dark w-100 py-3 fw-bold fs-5">
-                  Place Order - ${total.toLocaleString("en-US")}
+                  Confirm Order - ${total.toLocaleString("en-US")}
                 </button>
                 
               </form>

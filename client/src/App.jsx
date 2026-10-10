@@ -16,6 +16,9 @@ import Cart from "./pages/Cart";
 import Admin from "./pages/Admin";
 import Checkout from "./pages/Checkout";
 import Wishlist from "./pages/Wishlist";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import OrderSuccess from "./pages/OrderSuccess";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
 
@@ -24,46 +27,52 @@ function App() {
     <CartProvider>
       <WishlistProvider>
         <BrowserRouter>
-        <Navbar />
+          <Navbar />
 
-      <Routes>
+          <Routes>
 
-        <Route path="/" element={<Home />} />
+            <Route path="/" element={<Home />} />
 
-        <Route path="/watches" element={<Watches />} />
+            <Route path="/watches" element={<Watches />} />
 
-        <Route
-          path="/watches/:id"
-          element={<WatchDetails />}
-        />
+            <Route
+              path="/watches/:id"
+              element={<WatchDetails />}
+            />
 
-        <Route path="/Fragrances" element={<Fragrances />} />
+            <Route path="/Fragrances" element={<Fragrances />} />
 
-        <Route
-          path="/fragrances/:id"
-          element={<FragranceDetails />}
-        />
+            <Route
+              path="/fragrances/:id"
+              element={<FragranceDetails />}
+            />
 
-        <Route path="/about" element={<About />} />
+            <Route path="/about" element={<About />} />
 
-        <Route path="/contact" element={<Contact />} />
+            <Route path="/contact" element={<Contact />} />
 
-        <Route path="/login" element={<Login />} />
-        
-        <Route path="/register" element={<Register />} />
-        
-        <Route path="/cart" element={<Cart />} />
-        
-        <Route path="/checkout" element={<Checkout />} />
+            <Route path="/login" element={<Login />} />
 
-        <Route path="/wishlist" element={<Wishlist />} />
-        
-        <Route path="/admin" element={<Admin />} />
+            <Route path="/register" element={<Register />} />
 
-        <Route path="*" element={<NotFound />} />
+            <Route path="/cart" element={<Cart />} />
 
-        </Routes>
-      </BrowserRouter>
+            <Route path="/checkout" element={<Checkout />} />
+
+            <Route path="/wishlist" element={<Wishlist />} />
+
+            <Route path="/admin" element={<Admin />} />
+
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            <Route path="/reset-password" element={<ResetPassword />} />
+
+            <Route path="/order-success" element={<OrderSuccess />} />
+
+            <Route path="*" element={<NotFound />} />
+
+          </Routes>
+        </BrowserRouter>
       </WishlistProvider>
     </CartProvider>
   );
