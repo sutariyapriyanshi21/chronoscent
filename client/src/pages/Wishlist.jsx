@@ -22,17 +22,16 @@ function Wishlist() {
               <img src={item.image} alt={item.name} />
               <div className="wishlist-info">
                 <h3>{item.name}</h3>
-                <p className="price">${item.price}</p>
+                <p className="price">₹{(typeof item.price === 'number' ? item.price : Number(String(item.price).replace(/[^0-9.-]+/g,""))).toLocaleString("en-IN")}</p>
                 <div className="wishlist-actions">
                   <button 
                     className="add-to-cart-btn"
                     onClick={() => {
-                      const numericPrice = typeof item.price === 'string' ? Number(item.price.replace(/[^0-9.-]+/g,"")) : item.price;
+                      const numericPrice = typeof item.price === 'string' ? Number(item.price.replace(/[^0-9.-]+/g,"")) : Number(item.price);
                       addToCart({
-                        id: Math.random(), 
-                        name: item.name,
-                        price: numericPrice,
-                        image: item.image
+                        ...item,
+                        _id: item._id || item.id,
+                        price: numericPrice
                       });
                     }}
                   >

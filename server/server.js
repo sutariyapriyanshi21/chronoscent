@@ -35,7 +35,13 @@ app.get('/api/watches', async (req, res) => {
 // Get single watch
 app.get('/api/watches/:id', async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).json({ message: "Watch not found" });
+        }
         const watch = await Watch.findById(req.params.id);
+        if (!watch) {
+            return res.status(404).json({ message: "Watch not found" });
+        }
         res.json(watch);
     } catch (error) {
         res.status(500).json({ message: "Error fetching watch details" });
@@ -86,7 +92,13 @@ app.get('/api/fragrances', async (req, res) => {
 // Get single fragrance
 app.get('/api/fragrances/:id', async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).json({ message: "Fragrance not found" });
+        }
         const fragrance = await Fragrance.findById(req.params.id);
+        if (!fragrance) {
+            return res.status(404).json({ message: "Fragrance not found" });
+        }
         res.json(fragrance);
     } catch (error) {
         res.status(500).json({ message: "Error fetching fragrance details" });

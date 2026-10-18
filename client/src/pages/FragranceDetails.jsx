@@ -3,6 +3,7 @@ import { FiArrowLeft, FiHeart, FiShoppingCart } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useState, useEffect } from "react";
+import staticFragrances from "../Data/fragerence";
 
 import "../css/watch-details.css";
 
@@ -15,9 +16,18 @@ function FragranceDetails() {
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/api/fragrances/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Fragrance not found");
+        return res.json();
+      })
       .then((data) => setFragrance(data))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("API error, checking static fallback:", err);
+        const fallback = staticFragrances.find(
+          (f) => String(f.id) === String(id) || f.name.toLowerCase() === id.toLowerCase()
+        );
+        if (fallback) setFragrance(fallback);
+      });
   }, [id]);
 
   const isInWishlist = fragrance ? wishlistItems.some((item) => item.name === fragrance.name) : false;
@@ -103,7 +113,7 @@ function FragranceDetails() {
             </h1>
 
             <p className="watch-details-model mb-4">
-              Type: {fragrance.model}
+              Type: {fragrance.model || fragrance.fragranceType}
             </p>
 
 
@@ -119,7 +129,7 @@ function FragranceDetails() {
             {/* Price */}
 
             <h2 className="watch-details-price my-4">
-              ${fragrance.price.toLocaleString("en-US")}
+              ₹{fragrance.price.toLocaleString("en-IN")}
             </h2>
 
 
@@ -155,7 +165,7 @@ function FragranceDetails() {
               <div>
                 <strong>Availability</strong>
                 <span>
-                  {fragrance.inStock
+                  {fragrance.inStock !== false
                     ? "In Stock"
                     : "Out of Stock"}
                 </span>

@@ -33,7 +33,7 @@ function WatchCard({ watch, heightClass = "" }) {
         </Link>
         <div className="d-flex justify-content-between align-items-center mt-1">
           <strong className="watch-price">
-            ${watch.price.toLocaleString("en-US")}
+            ₹{watch.price.toLocaleString("en-IN")}
           </strong>
         </div>
       </div>

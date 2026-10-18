@@ -33,7 +33,7 @@ function FragranceCard({ fragrance, heightClass = "" }) {
         </Link>
         <div className="d-flex justify-content-between align-items-center mt-1">
           <strong className="watch-price">
-            ${fragrance.price.toLocaleString("en-US")}
+            ₹{fragrance.price.toLocaleString("en-IN")}
           </strong>
         </div>
       </div>

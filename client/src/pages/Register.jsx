@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../css/auth.css";
 
 function Register() {
@@ -12,6 +12,7 @@ function Register() {
   // 2. Create an error state to show red text if something goes wrong
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 3. This function runs when the user clicks "Create Account"
   const handleSubmit = async (e) => {
@@ -54,7 +55,7 @@ function Register() {
         // Wait a tiny bit (100ms) for React to update the screen, THEN show alert and navigate
         setTimeout(() => {
           alert("Account created successfully! You can now log in.");
-          navigate("/login"); // Redirect to login page
+          navigate("/login", { state: location.state }); // Redirect to login page
         }, 100);
       } else {
         setError(data.message || "Failed to register.");
@@ -142,7 +143,7 @@ function Register() {
 
         <div className="auth-footer">
           Already have an account? 
-          <Link to="/login">Sign in here</Link>
+          <Link to="/login" state={location.state}>Sign in here</Link>
         </div>
 
       </div>

@@ -1,63 +1,83 @@
+import { useState, useEffect } from "react";
 import "../css/FeaturedProducts.css";
 import ProductCard from "./ProductCard";
 
+// Static fallbacks in case backend is offline
 import rolex from "../assests/Products/rolex.jpg";
 import omega from "../assests/Products/omega.jpg";
 import cartier from "../assests/Products/cartier.jpg";
 import chanel from "../assests/Products/channel.jpg";
 
 function FeaturedProducts() {
+  const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    return (
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const [watchesRes, fragrancesRes] = await Promise.all([
+          fetch("http://127.0.0.1:5000/api/watches"),
+          fetch("http://127.0.0.1:5000/api/fragrances")
+        ]);
 
-        <section className="featured-products">
+        if (!watchesRes.ok || !fragrancesRes.ok) {
+          throw new Error("Failed to fetch products from backend");
+        }
 
-            <h2>Featured Products</h2>
+        const watches = await watchesRes.json();
+        const fragrances = await fragrancesRes.json();
 
-            <p>
-                Premium picks curated exclusively for you.
-            </p>
+        // Dynamically select 4 flagship luxury items (2 Watches & 2 Fragrances)
+        const rolexWatch = watches.find(w => w.brand?.toLowerCase() === "rolex") || watches[0];
+        const omegaWatch = watches.find(w => w.brand?.toLowerCase() === "omega") || watches[1];
+        const creedFragrance = fragrances.find(f => f.brand?.toLowerCase() === "creed") || fragrances[0];
+        const chanelFragrance = fragrances.find(f => f.brand?.toLowerCase() === "chanel") || fragrances[1];
 
-            <div className="product-grid">
+        const products = [
+          { ...rolexWatch, type: "watch" },
+          { ...omegaWatch, type: "watch" },
+          { ...creedFragrance, type: "fragrance" },
+          { ...chanelFragrance, type: "fragrance" }
+        ].filter(Boolean);
 
-                <ProductCard
-                    image={rolex}
-                    brand="ROLEX"
-                    name="Submariner"
-                    price="$899"
-                    rating="5.0"
-                />
+        setFeaturedProducts(products);
+      } catch (err) {
+        console.warn("Backend offline or error loading featured products. Using offline showcase:", err);
+        setFeaturedProducts([
+          { _id: "rolex-submariner", brand: "ROLEX", name: "Submariner Date", price: 1050000, rating: "4.9", image: rolex, type: "watch" },
+          { _id: "omega-seamaster", brand: "OMEGA", name: "Seamaster Diver", price: 525000, rating: "4.8", image: omega, type: "watch" },
+          { _id: "creed-aventus", brand: "CREED", name: "Aventus", price: 31000, rating: "4.9", image: cartier, type: "fragrance" },
+          { _id: "chanel-chance", brand: "CHANEL", name: "Chance", price: 11500, rating: "4.8", image: chanel, type: "fragrance" }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-                <ProductCard
-                    image={omega}
-                    brand="OMEGA"
-                    name="Speedmaster"
-                    price="$799"
-                    rating="4.9"
-                />
+    fetchFeatured();
+  }, []);
 
-                <ProductCard
-                    image={cartier}
-                    brand="CARTIER"
-                    name="Declaration"
-                    price="$149"
-                    rating="4.8"
-                />
+  return (
+    <section className="featured-products">
+      <h2>Featured Products</h2>
+      <p>Premium picks curated exclusively for you.</p>
 
-                <ProductCard
-                    image={chanel}
-                    brand="CHANEL"
-                    name="Bleu De Chanel"
-                    price="$169"
-                    rating="5.0"
-                />
-
-            </div>
-
-        </section>
-
-    );
-
+      <div className="product-grid">
+        {featuredProducts.map((product) => (
+          <ProductCard
+            key={product._id}
+            _id={product._id}
+            image={product.image}
+            brand={product.brand}
+            name={product.name}
+            price={product.price}
+            rating={product.rating}
+            type={product.type}
+          />
+        ))}
+      </div>
+    </section>
+  );
 }
 
 export default FeaturedProducts;

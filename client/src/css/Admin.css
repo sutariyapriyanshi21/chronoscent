@@ -1,0 +1,155 @@
+/* =========================================
+   CHRONOSCENT ELITE - ADMIN CONSOLE STYLES
+========================================= */
+
+.admin-wrapper {
+  background-color: #F8FAFC;
+  min-height: 100vh;
+  font-family: var(--font-body, 'Inter', sans-serif);
+  color: #1F2937;
+}
+
+.admin-header-bar {
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.admin-logo-title {
+  font-family: var(--font-heading, 'Playfair Display', serif);
+  font-weight: 700;
+  font-size: 1.35rem;
+  color: #0F4C81;
+}
+
+.admin-badge {
+  background-color: #F0F9FF;
+  color: #0F4C81;
+  border: 1px solid #BAE6FD;
+  font-size: 0.72rem;
+  letter-spacing: 0.5px;
+  padding: 4px 10px;
+  font-weight: 600;
+  border-radius: 9999px;
+}
+
+.admin-stat-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.06);
+}
+
+.admin-stat-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748B;
+  margin-bottom: 0.25rem;
+}
+
+.admin-stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #0F4C81;
+  margin: 0;
+}
+
+.admin-tab-btn {
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.88rem;
+  padding: 8px 18px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.admin-tab-btn:hover {
+  background: #F1F5F9;
+  color: #0F4C81;
+}
+
+.admin-tab-btn.active {
+  background: #0F4C81;
+  color: #FFFFFF;
+  border-color: #0F4C81;
+  box-shadow: 0 2px 6px rgba(15, 76, 129, 0.2);
+}
+
+.admin-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+.admin-card-header {
+  background: #FFFFFF;
+  border-bottom: 1px solid #F1F5F9;
+  padding: 1rem 1.5rem;
+}
+
+.admin-table th {
+  background: #F8FAFC;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #E2E8F0;
+  padding: 12px 16px;
+}
+
+.admin-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #F1F5F9;
+  font-size: 0.9rem;
+}
+
+.admin-table tr:hover td {
+  background-color: #F8FAFC;
+}
+
+.admin-btn-primary {
+  background-color: #0F4C81;
+  border-color: #0F4C81;
+  color: #FFFFFF;
+  font-weight: 500;
+}
+
+.admin-btn-primary:hover {
+  background-color: #165A95;
+  border-color: #165A95;
+  color: #FFFFFF;
+}
+
+.admin-lock-screen {
+  min-height: 100vh;
+  background: radial-gradient(circle at top right, #F0F9FF, #F8FAFC);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.admin-lock-card {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(15, 76, 129, 0.08);
+  width: 100%;
+  max-width: 440px;
+  padding: 2.5rem;
+}

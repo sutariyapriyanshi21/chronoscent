@@ -4,10 +4,14 @@ const mongoose = require('mongoose');
 const watchSchema = new mongoose.Schema({
     name: { type: String, required: true },
     brand: { type: String, required: true },
+    model: { type: String, default: "" },
     price: { type: Number, required: true },
+    rating: { type: Number, default: 4.8 },
     image: { type: String, required: true },
-    gender: { type: String }, // e.g., "Men", "Women"
-    watchType: { type: String } // e.g., "Automatic", "Chronograph"
+    gender: { type: String, default: "Unisex" }, // e.g., "Men", "Women", "Unisex"
+    watchType: { type: String, default: "Classic" }, // e.g., "Automatic", "Chronograph", "Diver", "Sport", "Dress"
+    category: { type: String, default: "Luxury" },
+    inStock: { type: Boolean, default: true }
 });
 
 // 2. Create the Model

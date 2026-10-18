@@ -3,6 +3,7 @@ import { FiArrowLeft, FiHeart, FiShoppingCart } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import { useState, useEffect } from "react";
+import staticWatches from "../Data/Watches";
 
 import "../css/watch-details.css";
 
@@ -15,9 +16,18 @@ function WatchDetails() {
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/api/watches/${id}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Watch not found");
+        return res.json();
+      })
       .then((data) => setWatch(data))
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error("API error, checking static fallback:", err);
+        const fallback = staticWatches.find(
+          (w) => String(w.id) === String(id) || w.name.toLowerCase() === id.toLowerCase()
+        );
+        if (fallback) setWatch(fallback);
+      });
   }, [id]);
 
   const isInWishlist = watch ? wishlistItems.some((item) => item.name === watch.name) : false;
@@ -119,7 +129,7 @@ function WatchDetails() {
             {/* Price */}
 
             <h2 className="watch-details-price my-4">
-              ${watch.price.toLocaleString("en-US")}
+              ₹{watch.price.toLocaleString("en-IN")}
             </h2>
 
 
@@ -155,7 +165,7 @@ function WatchDetails() {
               <div>
                 <strong>Availability</strong>
                 <span>
-                  {watch.inStock
+                  {watch.inStock !== false
                     ? "In Stock"
                     : "Out of Stock"}
                 </span>

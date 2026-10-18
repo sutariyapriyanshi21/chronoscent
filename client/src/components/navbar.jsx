@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 
 import {
   FiSearch,
@@ -8,6 +8,7 @@ import {
   FiUser,
   FiMenu,
   FiX,
+  FiLogOut,
 } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -16,8 +17,59 @@ import GlobalSearch from "./GlobalSearch";
 import "../css/navbar.css";
 
 function Navbar() {
+  const location = useLocation();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef(null);
+
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem("chronoscent_user");
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  // Listen for login/logout events across components
+  useEffect(() => {
+    const handleAuthChange = () => {
+      try {
+        const saved = localStorage.getItem("chronoscent_user");
+        setCurrentUser(saved ? JSON.parse(saved) : null);
+      } catch {
+        setCurrentUser(null);
+      }
+    };
+
+    window.addEventListener("authChange", handleAuthChange);
+    window.addEventListener("storage", handleAuthChange);
+
+    // Close user dropdown on outside click
+    const handleClickOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      window.removeEventListener("authChange", handleAuthChange);
+      window.removeEventListener("storage", handleAuthChange);
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("chronoscent_user");
+    setCurrentUser(null);
+    setUserMenuOpen(false);
+    window.dispatchEvent(new Event("authChange"));
+    alert("You have successfully logged out.");
+  };
+
   const { totalItems } = useCart();
   const { wishlistItems } = useWishlist();
 
@@ -149,15 +201,56 @@ function Navbar() {
               </button>
             </Link>
 
-            <Link to="/login">
-              <button
-                type="button"
-                className="icon-btn"
-                aria-label="Account"
-              >
-                <FiUser />
-              </button>
-            </Link>
+            {currentUser ? (
+              <div className="position-relative" ref={userMenuRef}>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Account Menu"
+                  title={`Logged in as ${currentUser.name}`}
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                >
+                  <FiUser />
+                </button>
+
+                {userMenuOpen && (
+                  <div 
+                    className="position-absolute end-0 mt-2 p-3 bg-white shadow rounded border"
+                    style={{ minWidth: '200px', zIndex: 1050 }}
+                  >
+                    <div className="mb-2">
+                      <small className="text-muted d-block" style={{ fontSize: '0.75rem' }}>SIGNED IN AS</small>
+                      <strong className="d-block text-truncate" style={{ color: '#0f4c81', fontSize: '0.95rem' }}>
+                        {currentUser.name}
+                      </strong>
+                      <small className="text-muted d-block text-truncate" style={{ fontSize: '0.8rem' }}>
+                        {currentUser.email}
+                      </small>
+                    </div>
+                    <hr className="my-2" />
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center gap-1"
+                      style={{ fontSize: '0.85rem' }}
+                    >
+                      <FiLogOut size={14} /> Log Out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link to="/login">
+                <button
+                  type="button"
+                  className="icon-btn"
+                  aria-label="Account"
+                  title="Sign In"
+                >
+                  <FiUser />
+                </button>
+              </Link>
+            )}
 
           </div>
 
@@ -295,15 +388,30 @@ function Navbar() {
                 </button>
               </Link>
 
-              <Link to="/login">
+              {currentUser ? (
                 <button
                   type="button"
-                  className="icon-btn"
-                  aria-label="Account"
+                  className="icon-btn text-danger"
+                  aria-label="Log Out"
+                  title="Log Out"
+                  onClick={() => {
+                    handleLogout();
+                    closeMenu();
+                  }}
                 >
-                  <FiUser />
+                  <FiLogOut />
                 </button>
-              </Link>
+              ) : (
+                <Link to="/login" onClick={closeMenu}>
+                  <button
+                    type="button"
+                    className="icon-btn"
+                    aria-label="Account"
+                  >
+                    <FiUser />
+                  </button>
+                </Link>
+              )}
 
             </div>
 

@@ -1,18 +1,32 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 function Checkout() {
   const { cartItems, total, clearCart } = useCart();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = localStorage.getItem("chronoscent_user");
+    if (!user) {
+      navigate("/login", { state: { from: "/checkout" } });
+    }
+  }, [navigate]);
   
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    address: "",
-    city: "",
-    zip: "",
-    paymentMethod: "Cash on Delivery" // Automatically set to COD
+  const [formData, setFormData] = useState(() => {
+    let savedUser = null;
+    try {
+      savedUser = JSON.parse(localStorage.getItem("chronoscent_user"));
+    } catch {}
+
+    return {
+      name: savedUser?.name || "",
+      email: savedUser?.email || "",
+      address: "",
+      city: "",
+      zip: "",
+      paymentMethod: "Cash on Delivery"
+    };
   });
 
   const handleChange = (e) => {
@@ -120,7 +134,7 @@ function Checkout() {
                 </div>
 
                 <button type="submit" className="btn btn-dark w-100 py-3 fw-bold fs-5">
-                  Confirm Order - ${total.toLocaleString("en-US")}
+                  Confirm Order - ₹{total.toLocaleString("en-IN")}
                 </button>
                 
               </form>
@@ -134,13 +148,13 @@ function Checkout() {
               {cartItems.map((item, index) => (
                 <div key={index} className="d-flex justify-content-between mb-2">
                   <span>{item.name} x {item.quantity}</span>
-                  <span>${(item.price * item.quantity).toLocaleString("en-US")}</span>
+                  <span>₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
                 </div>
               ))}
               <hr />
               <div className="d-flex justify-content-between fw-bold fs-5">
                 <span>Total</span>
-                <span>${total.toLocaleString("en-US")}</span>
+                <span>₹{total.toLocaleString("en-IN")}</span>
               </div>
             </div>
           </div>

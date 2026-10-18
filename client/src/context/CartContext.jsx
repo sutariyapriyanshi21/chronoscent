@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const CartContext = createContext();
 
@@ -7,19 +7,35 @@ export const useCart = () => {
 };
 
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem("chronoscent_cart");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Save to localStorage whenever cartItems changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("chronoscent_cart", JSON.stringify(cartItems));
+    } catch (err) {
+      console.error("Failed to save cart to localStorage:", err);
+    }
+  }, [cartItems]);
 
   // Add an item to the cart
   const addToCart = (product) => {
     setCartItems((prevItems) => {
       // Check if item already exists in cart based on its ID
       // To ensure uniqueness across different categories, we use the name and id
-      const existingItem = prevItems.find((item) => item._id === product._id && item.name === product.name);
+      const existingItem = prevItems.find((item) => (item._id && item._id === product._id) || item.name === product.name);
       
       if (existingItem) {
         // If it exists, increase quantity
         return prevItems.map((item) =>
-          item._id === product._id && item.name === product.name
+          ((item._id && item._id === product._id) || item.name === product.name)
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
@@ -61,11 +77,14 @@ export const CartProvider = ({ children }) => {
   // Clear entire cart
   const clearCart = () => {
     setCartItems([]);
+    try {
+      localStorage.removeItem("chronoscent_cart");
+    } catch {}
   };
 
-  // Calculate totals
+  // Calculate totals (Complimentary luxury shipping on orders over ₹2,500)
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const shipping = subtotal > 0 ? 15 : 0;
+  const shipping = subtotal >= 2500 || subtotal === 0 ? 0 : 250;
   const total = subtotal + shipping;
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../css/auth.css";
 
 function Login() {
@@ -10,6 +10,7 @@ function Login() {
   // 2. Create an error state to show red text if something goes wrong
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 3. This function runs when the user clicks "Sign In"
   const handleSubmit = async (e) => {
@@ -38,14 +39,18 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
+        // Save user to localStorage
+        localStorage.setItem("chronoscent_user", JSON.stringify(data.user));
+        window.dispatchEvent(new Event("authChange"));
+
         // Clear the form FIRST so the user sees it empty
         setEmail("");
         setPassword("");
         
-        // Wait a tiny bit (100ms) for React to update the screen, THEN show alert and navigate
+        const destination = location.state?.from || "/";
         setTimeout(() => {
           alert(`Welcome back, ${data.user.name}!`);
-          navigate("/"); // Redirect to Home page
+          navigate(destination);
         }, 100);
       } else {
         setError(data.message || "Invalid email or password.");
@@ -113,7 +118,7 @@ function Login() {
 
         <div className="auth-footer">
           Don't have an account? 
-          <Link to="/register">Create one now</Link>
+          <Link to="/register" state={location.state}>Create one now</Link>
         </div>
 
       </div>

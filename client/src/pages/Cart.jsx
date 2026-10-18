@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FiTrash2, FiArrowLeft } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import "../css/Cart.css";
 
 function Cart() {
+  const navigate = useNavigate();
   const { 
     cartItems, 
     increaseQuantity, 
@@ -13,6 +14,15 @@ function Cart() {
     shipping, 
     total 
   } = useCart();
+
+  const handleProceedToCheckout = () => {
+    const user = localStorage.getItem("chronoscent_user");
+    if (user) {
+      navigate("/checkout");
+    } else {
+      navigate("/login", { state: { from: "/checkout" } });
+    }
+  };
 
   return (
     <section className="cart-page">
@@ -43,7 +53,7 @@ function Cart() {
                   {/* Details */}
                   <div className="cart-item-details">
                     <p className="cart-item-brand">{item.brand}</p>
-                    <Link to={item.type === "watch" ? `/watches/${item._id}` : `/fragrances/${item._id}`} className="text-decoration-none">
+                    <Link to={item._id ? (item.type === "watch" ? `/watches/${item._id}` : `/fragrances/${item._id}`) : (item.type === "watch" ? "/watches" : "/fragrances")} className="text-decoration-none">
                       <h4 className="cart-item-name">{item.name}</h4>
                     </Link>
                     
@@ -54,7 +64,7 @@ function Cart() {
 
                   {/* Quantity & Price */}
                   <div className="cart-item-price-wrapper text-lg-end">
-                    <p className="cart-item-price mb-2">${item.price.toLocaleString("en-US")}</p>
+                    <p className="cart-item-price mb-2">₹{item.price.toLocaleString("en-IN")}</p>
                     
                     <div className="quantity-controls ms-auto ms-md-0">
                       <button className="quantity-btn" onClick={() => decreaseQuantity(item.cartId)}>-</button>
@@ -74,25 +84,26 @@ function Cart() {
                 
                 <div className="summary-row">
                   <span>Subtotal</span>
-                  <span>${subtotal.toLocaleString("en-US")}</span>
+                  <span>₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
                 
                 <div className="summary-row">
                   <span>Shipping</span>
-                  <span>${shipping.toLocaleString("en-US")}</span>
+                  <span>₹{shipping.toLocaleString("en-IN")}</span>
                 </div>
                 
                 <div className="summary-total">
                   <span>Total</span>
-                  <span>${total.toLocaleString("en-US")}</span>
+                  <span>₹{total.toLocaleString("en-IN")}</span>
                 </div>
 
-                <Link 
-                  to="/checkout"
-                  className="checkout-btn d-block text-center text-decoration-none"
+                <button 
+                  type="button"
+                  onClick={handleProceedToCheckout}
+                  className="checkout-btn d-block text-center text-decoration-none w-100 border-0"
                 >
                   Proceed to Checkout
-                </Link>
+                </button>
               </div>
             </div>
 

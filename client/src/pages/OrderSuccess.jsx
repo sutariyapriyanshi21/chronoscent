@@ -45,7 +45,7 @@ function OrderSuccess() {
                 {orderData.orderItems.map((item, index) => (
                   <li key={index} className="d-flex justify-content-between mb-2">
                     <span>{item.name} (x{item.quantity})</span>
-                    <span>${(item.price * item.quantity).toLocaleString("en-US")}</span>
+                    <span>₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
                   </li>
                 ))}
               </ul>
@@ -53,7 +53,7 @@ function OrderSuccess() {
 
             <div className="d-flex justify-content-between border-top pt-3 fw-bold fs-4">
               <span>Total Paid:</span>
-              <span>${orderData.totalAmount.toLocaleString("en-US")}</span>
+              <span>₹{orderData.totalAmount.toLocaleString("en-IN")}</span>
             </div>
           </div>
 

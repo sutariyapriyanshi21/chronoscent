@@ -3,40 +3,40 @@ const Watch = require('./models/Watch');
 const Fragrance = require('./models/Fragerence');
 
 const watchData = [
-  { name: "Submariner Date", brand: "Rolex", price: 12500, image: "/assests/Products/Watches/rolex-submariner.jpg", gender: "Men", watchType: "Diver" },
-  { name: "Lady-Datejust", brand: "Rolex", price: 980, image: "/assests/Products/Watches/Lady-Datejust.jpg", gender: "Women", watchType: "Classic" },
-  { name: "Seamaster Diver 300M", brand: "Omega", price: 6200, image: "/assests/Products/Watches/omega-seamaster.jpg", gender: "Men", watchType: "Diver" },
-  { name: "Panthère de Cartier", brand: "Cartier", price: 7800, image: "/assests/Products/Watches/Cartier Panthère de Cartier.jpg", gender: "Women", watchType: "Dress" },
-  { name: "Lovely Square", brand: "Tissot", price: 450, image: "/assests/Products/Watches/Tissot Lovely Square.jpg", gender: "Women", watchType: "Classic" },
-  { name: "Prospex Diver", brand: "Seiko", price: 1250, image: "/assests/Products/Watches/seiko-prospex.jpg", gender: "Men", watchType: "Sport" },
-  { name: "Asymmetrical Vintage", brand: "Seiko", price: 350, image: "/assests/Products/Watches/Assymentrical seiko.jpg", gender: "Unisex", watchType: "Classic" },
-  { name: "Baignoire", brand: "Cartier", price: 11500, image: "/assests/Products/Watches/Cartier Baignoire.jpg", gender: "Women", watchType: "Classic" },
-  { name: "Drive de Cartier", brand: "Cartier", price: 6350, image: "/assests/Products/Watches/Cartier Draive De Cartier.jpg", gender: "Men", watchType: "Classic" },
-  { name: "Constellation Pluma", brand: "Omega", price: 5200, image: "/assests/Products/Watches/Omega Constellation Pluma.jpg", gender: "Women", watchType: "Classic" },
-  { name: "Oyster Perpetual Datejust", brand: "Rolex", price: 8550, image: "/assests/Products/Watches/Rolex Oyster Perpetual Datejust.jpg", gender: "Unisex", watchType: "Classic" },
-  { name: "Constellation", brand: "Omega", price: 6050, image: "/assests/Products/Watches/The Omega Constellation.jpg", gender: "Men", watchType: "Classic" },
-  { name: "Classic Dream", brand: "Tissot", price: 250, image: "/assests/Products/Watches/Tissot Classic Dream.jpg", gender: "Men", watchType: "Classic" },
-  { name: "Classic", brand: "Seiko", price: 195, image: "/assests/Products/Watches/seiko.jpg", gender: "Unisex", watchType: "Classic" },
-  { name: "Vintage Must de Cartier", brand: "Cartier", price: 1800, image: "/assests/Products/Watches/vintage cartier.jpg", gender: "Unisex", watchType: "Classic" }
+  { name: "Submariner Date", brand: "Rolex", model: "126610LN", price: 1050000, rating: 4.9, image: "/assests/Products/Watches/rolex-submariner.jpg", category: "Luxury", gender: "Men", watchType: "Diver", inStock: true },
+  { name: "Lady-Datejust", brand: "Rolex", model: "279173", price: 825000, rating: 4.8, image: "/assests/Products/Watches/Lady-Datejust.jpg", category: "Luxury", gender: "Women", watchType: "Classic", inStock: true },
+  { name: "Seamaster Diver 300M", brand: "Omega", model: "210.30.42.20.03.001", price: 525000, rating: 4.8, image: "/assests/Products/Watches/omega-seamaster.jpg", category: "Luxury", gender: "Men", watchType: "Diver", inStock: true },
+  { name: "Panthère de Cartier", brand: "Cartier", model: "WSPN0012", price: 660000, rating: 4.8, image: "/assests/Products/Watches/Cartier Panthère de Cartier.jpg", category: "Luxury", gender: "Women", watchType: "Dress", inStock: true },
+  { name: "Lovely Square", brand: "Tissot", model: "T058.109.11.031.00", price: 38500, rating: 4.7, image: "/assests/Products/Watches/Tissot Lovely Square.jpg", category: "Premium", gender: "Women", watchType: "Classic", inStock: true },
+  { name: "Prospex Diver", brand: "Seiko", model: "SPB143", price: 105000, rating: 4.7, image: "/assests/Products/Watches/seiko-prospex.jpg", category: "Premium", gender: "Men", watchType: "Sport", inStock: true },
+  { name: "Asymmetrical Vintage", brand: "Seiko", model: "Custom Vintage", price: 29500, rating: 4.5, image: "/assests/Products/Watches/Assymentrical seiko.jpg", category: "Standard", gender: "Unisex", watchType: "Classic", inStock: true },
+  { name: "Baignoire", brand: "Cartier", model: "W8000008", price: 975000, rating: 4.9, image: "/assests/Products/Watches/Cartier Baignoire.jpg", category: "Luxury", gender: "Women", watchType: "Classic", inStock: true },
+  { name: "Drive de Cartier", brand: "Cartier", model: "WSNM0004", price: 540000, rating: 4.8, image: "/assests/Products/Watches/Cartier Draive De Cartier.jpg", category: "Luxury", gender: "Men", watchType: "Classic", inStock: true },
+  { name: "Constellation Pluma", brand: "Omega", model: "123.20.27.60.55.007", price: 440000, rating: 4.9, image: "/assests/Products/Watches/Omega Constellation Pluma.jpg", category: "Luxury", gender: "Women", watchType: "Classic", inStock: true },
+  { name: "Oyster Perpetual Datejust", brand: "Rolex", model: "126234", price: 725000, rating: 4.9, image: "/assests/Products/Watches/Rolex Oyster Perpetual Datejust.jpg", category: "Luxury", gender: "Unisex", watchType: "Classic", inStock: true },
+  { name: "Constellation", brand: "Omega", model: "131.10.39.20.01.001", price: 515000, rating: 4.8, image: "/assests/Products/Watches/The Omega Constellation.jpg", category: "Luxury", gender: "Men", watchType: "Classic", inStock: true },
+  { name: "Classic Dream", brand: "Tissot", model: "T129.410.16.013.00", price: 21500, rating: 4.6, image: "/assests/Products/Watches/Tissot Classic Dream.jpg", category: "Standard", gender: "Men", watchType: "Classic", inStock: true },
+  { name: "Classic", brand: "Seiko", model: "SUR371", price: 16500, rating: 4.5, image: "/assests/Products/Watches/seiko.jpg", category: "Standard", gender: "Unisex", watchType: "Classic", inStock: true },
+  { name: "Vintage Must de Cartier", brand: "Cartier", model: "Vintage", price: 155000, rating: 4.7, image: "/assests/Products/Watches/vintage cartier.jpg", category: "Luxury", gender: "Unisex", watchType: "Classic", inStock: true }
 ];
 
 const fragranceData = [
-  { name: "Chance", brand: "Chanel", price: 135, image: "/assests/Products/Fregerances/Chanel Chance.jpg", gender: "Women", fragranceType: "Floral" },
-  { name: "Pour Monsieur", brand: "Chanel", price: 120, image: "/assests/Products/Fregerances/Chanel Pour Monsieur.jpg", gender: "Men", fragranceType: "Woody" },
-  { name: "Aventus", brand: "Creed", price: 365, image: "/assests/Products/Fregerances/Creed Aventus.jpg", gender: "Men", fragranceType: "Fresh" },
-  { name: "Queen of Silk", brand: "Creed", price: 400, image: "/assests/Products/Fregerances/Creed Queen of Silk.jpg", gender: "Women", fragranceType: "Oriental" },
-  { name: "Carmina", brand: "Creed", price: 425, image: "/assests/Products/Fregerances/Creed-carmina.jpg", gender: "Women", fragranceType: "Floral" },
-  { name: "Crystal Noir", brand: "Versace", price: 110, image: "/assests/Products/Fregerances/Crystal Noir Luxury_unisex.jpg", gender: "Unisex", fragranceType: "Oriental" },
-  { name: "Dior Homme", brand: "Dior", price: 115, image: "/assests/Products/Fregerances/Dior Homme_unisex.jpg", gender: "Unisex", fragranceType: "Woody" },
-  { name: "Sauvage", brand: "Dior", price: 145, image: "/assests/Products/Fregerances/Dior Sauvage.jpg", gender: "Men", fragranceType: "Fresh" },
-  { name: "Eau Fraiche", brand: "Versace", price: 90, image: "/assests/Products/Fregerances/EAU Fraiche_varsache_men.jpg", gender: "Men", fragranceType: "Fresh" },
-  { name: "Gabrielle", brand: "Chanel", price: 160, image: "/assests/Products/Fregerances/Gebrielle Chanel.jpg", gender: "Women", fragranceType: "Floral" },
-  { name: "Gris Dior", brand: "Dior", price: 330, image: "/assests/Products/Fregerances/Gris Dior_ Unisex Eau de Parfum.jpg", gender: "Unisex", fragranceType: "Woody" },
-  { name: "Miss Dior", brand: "Dior", price: 135, image: "/assests/Products/Fregerances/Miss Dior.jpg", gender: "Women", fragranceType: "Floral" },
-  { name: "Santal Blush", brand: "Tom Ford", price: 295, image: "/assests/Products/Fregerances/TomFord Santal Blush.jpg", gender: "Unisex", fragranceType: "Woody" },
-  { name: "Lost Cherry", brand: "Tom Ford", price: 395, image: "/assests/Products/Fregerances/TomFord_Lost Cherry.jpg", gender: "Unisex", fragranceType: "Fruity" },
-  { name: "Bright Crystal", brand: "Versace", price: 95, image: "/assests/Products/Fregerances/Versace-Bright Crystal.jpg", gender: "Women", fragranceType: "Fruity" },
-  { name: "Eros Pour Femme", brand: "Versace", price: 120, image: "/assests/Products/Fregerances/varsace Eros pour Femme.jpg", gender: "Women", fragranceType: "Woody" }
+  { name: "Chance", brand: "Chanel", model: "Eau de Parfum", price: 11500, rating: 4.8, image: "/assests/Products/Fregerances/Chanel Chance.jpg", category: "Luxury", gender: "Women", fragranceType: "Floral", inStock: true },
+  { name: "Pour Monsieur", brand: "Chanel", model: "Eau de Toilette", price: 10200, rating: 4.7, image: "/assests/Products/Fregerances/Chanel Pour Monsieur.jpg", category: "Classic", gender: "Men", fragranceType: "Woody", inStock: true },
+  { name: "Aventus", brand: "Creed", model: "Eau de Parfum", price: 31000, rating: 4.9, image: "/assests/Products/Fregerances/Creed Aventus.jpg", category: "Niche", gender: "Men", fragranceType: "Fresh", inStock: true },
+  { name: "Queen of Silk", brand: "Creed", model: "Eau de Parfum", price: 34000, rating: 4.8, image: "/assests/Products/Fregerances/Creed Queen of Silk.jpg", category: "Niche", gender: "Women", fragranceType: "Oriental", inStock: true },
+  { name: "Carmina", brand: "Creed", model: "Eau de Parfum", price: 36000, rating: 4.9, image: "/assests/Products/Fregerances/Creed-carmina.jpg", category: "Niche", gender: "Women", fragranceType: "Floral", inStock: true },
+  { name: "Crystal Noir", brand: "Versace", model: "Eau de Parfum", price: 9500, rating: 4.6, image: "/assests/Products/Fregerances/Crystal Noir Luxury_unisex.jpg", category: "Designer", gender: "Unisex", fragranceType: "Oriental", inStock: true },
+  { name: "Dior Homme", brand: "Dior", model: "Eau de Toilette", price: 9800, rating: 4.7, image: "/assests/Products/Fregerances/Dior Homme_unisex.jpg", category: "Designer", gender: "Unisex", fragranceType: "Woody", inStock: true },
+  { name: "Sauvage", brand: "Dior", model: "Eau de Parfum", price: 12500, rating: 4.9, image: "/assests/Products/Fregerances/Dior Sauvage.jpg", category: "Designer", gender: "Men", fragranceType: "Fresh", inStock: true },
+  { name: "Eau Fraiche", brand: "Versace", model: "Eau de Toilette", price: 7800, rating: 4.5, image: "/assests/Products/Fregerances/EAU Fraiche_varsache_men.jpg", category: "Designer", gender: "Men", fragranceType: "Fresh", inStock: true },
+  { name: "Gabrielle", brand: "Chanel", model: "Eau de Parfum", price: 13500, rating: 4.8, image: "/assests/Products/Fregerances/Gebrielle Chanel.jpg", category: "Luxury", gender: "Women", fragranceType: "Floral", inStock: true },
+  { name: "Gris Dior", brand: "Dior", model: "Eau de Parfum", price: 28000, rating: 4.9, image: "/assests/Products/Fregerances/Gris Dior_ Unisex Eau de Parfum.jpg", category: "Private Blend", gender: "Unisex", fragranceType: "Woody", inStock: true },
+  { name: "Miss Dior", brand: "Dior", model: "Eau de Parfum", price: 11500, rating: 4.7, image: "/assests/Products/Fregerances/Miss Dior.jpg", category: "Designer", gender: "Women", fragranceType: "Floral", inStock: true },
+  { name: "Santal Blush", brand: "Tom Ford", model: "Eau de Parfum", price: 25000, rating: 4.8, image: "/assests/Products/Fregerances/TomFord Santal Blush.jpg", category: "Private Blend", gender: "Unisex", fragranceType: "Woody", inStock: true },
+  { name: "Lost Cherry", brand: "Tom Ford", model: "Eau de Parfum", price: 33500, rating: 4.9, image: "/assests/Products/Fregerances/TomFord_Lost Cherry.jpg", category: "Private Blend", gender: "Unisex", fragranceType: "Fruity", inStock: true },
+  { name: "Bright Crystal", brand: "Versace", model: "Eau de Toilette", price: 8200, rating: 4.6, image: "/assests/Products/Fregerances/Versace-Bright Crystal.jpg", category: "Designer", gender: "Women", fragranceType: "Fruity", inStock: true },
+  { name: "Eros Pour Femme", brand: "Versace", model: "Eau de Parfum", price: 10500, rating: 4.7, image: "/assests/Products/Fregerances/varsace Eros pour Femme.jpg", category: "Designer", gender: "Women", fragranceType: "Woody", inStock: true }
 ];
 
 mongoose.connect('mongodb://127.0.0.1:27017/chronoscent')
@@ -51,7 +51,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/chronoscent')
         await Watch.insertMany(watchData);
         await Fragrance.insertMany(fragranceData);
 
-        console.log('Data Successfully Seeded! Added 15 Watches and 16 Fragrances.');
+        console.log('Data Successfully Seeded! Added 15 Watches and 16 Fragrances with realistic Indian luxury pricing.');
         process.exit();
     })
     .catch((err) => {

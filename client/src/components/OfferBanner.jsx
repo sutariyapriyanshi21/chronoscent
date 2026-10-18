@@ -19,7 +19,7 @@ function OfferBanner() {
 
                 <p>
                     Enjoy complimentary shipping on all orders above
-                    <strong> $250 </strong>
+                    <strong> ₹2,500 </strong>
                     and experience luxury delivered to your doorstep.
                 </p>
 

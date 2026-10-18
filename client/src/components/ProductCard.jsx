@@ -1,21 +1,35 @@
+import { Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
 import "../css/ProductCard.css";
 
 function ProductCard({
+  _id,
   image,
   brand,
   name,
   price,
-  rating
+  rating,
+  type = "watch",
+  product
 }) {
+  const item = product || { _id, image, brand, name, price, rating, type };
   const { addToCart } = useCart();
   const { wishlistItems, addToWishlist } = useWishlist();
 
-  // Convert the string price (e.g. "$899") to a number for the cart logic
-  const numericPrice = Number(price.replace(/[^0-9.-]+/g,""));
+  // Convert the price to a number for cart logic
+  const numericPrice = typeof item.price === "number" 
+    ? item.price 
+    : Number(String(item.price).replace(/[^0-9.-]+/g, ""));
 
-  const isInWishlist = wishlistItems.some((item) => item.name === name);
+  const displayPrice = typeof item.price === "number"
+    ? `₹${item.price.toLocaleString("en-IN")}`
+    : String(item.price).replace("$", "₹");
+
+  const isInWishlist = wishlistItems.some((w) => w.name === item.name);
+  const detailLink = item._id 
+    ? (item.type === "fragrance" ? `/fragrances/${item._id}` : `/watches/${item._id}`)
+    : (item.type === "fragrance" ? "/fragrances" : "/watches");
 
   return (
     <div className="product-card">
@@ -23,37 +37,50 @@ function ProductCard({
       <div 
         className="wishlist" 
         onClick={() => {
-          addToWishlist({ brand, name, price, image, rating });
+          addToWishlist({
+            _id: item._id,
+            brand: item.brand,
+            name: item.name,
+            price: numericPrice,
+            image: item.image,
+            rating: item.rating,
+            type: item.type
+          });
         }}
         style={{ cursor: 'pointer', color: isInWishlist ? 'red' : 'inherit' }}
+        title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
       >
         <i className={isInWishlist ? "bi bi-heart-fill" : "bi bi-heart"}></i>
       </div>
 
-      <img src={image} alt={name} />
+      <Link to={detailLink} style={{ textDecoration: 'none', color: 'inherit' }}>
+        <img src={item.image} alt={item.name} />
+      </Link>
 
       <div className="product-info">
 
         <span className="brand">
-          {brand}
+          {item.brand}
         </span>
 
-        <h3>{name}</h3>
+        <Link to={detailLink} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3>{item.name}</h3>
+        </Link>
 
         <p className="rating">
-          ⭐ {rating}
+          ⭐ {item.rating}
         </p>
 
-        <h4>{price}</h4>
+        <h4>{displayPrice}</h4>
 
         <button onClick={() => {
           addToCart({
-            id: Math.random(), // since featured products don't have real IDs passed currently
-            brand,
-            name,
+            _id: item._id || `product-${item.brand.toLowerCase()}-${item.name.toLowerCase()}`.replace(/\s+/g, '-'),
+            brand: item.brand,
+            name: item.name,
             price: numericPrice,
-            image,
-            type: 'featured'
+            image: item.image,
+            type: item.type
           });
         }}>
           Add to Cart
