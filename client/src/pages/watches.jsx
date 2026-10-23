@@ -10,21 +10,31 @@ import "../css/watches.css";
 function Watches() {
   const [watches, setWatches] = useState([]); // <-- State to hold watches from database
 
-  // Fetch watches from backend when the page loads
+  const [dbBrands, setDbBrands] = useState([]);
+
+  // Fetch watches and brands from backend when the page loads
   useEffect(() => {
-    console.log("Fetching watches from backend...");
     fetch("http://127.0.0.1:5000/api/watches")
       .then((res) => {
-        console.log("Response status:", res.status);
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
       })
-      .then((data) => {
-        console.log("Fetched watches:", data);
-        setWatches(data);
-      })
+      .then((data) => setWatches(data))
       .catch((err) => console.error("Error fetching watches:", err));
+
+    fetch("http://127.0.0.1:5000/api/brands?type=watches")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setDbBrands(data.map((b) => b.name));
+      })
+      .catch(() => {});
   }, []);
+
+  const dynamicBrands = useMemo(() => {
+    const fromWatches = watches.map((w) => w.brand).filter(Boolean);
+    const combined = Array.from(new Set([...dbBrands, ...fromWatches]));
+    return combined.length > 0 ? combined : ["Rolex", "Omega", "Cartier", "Tissot", "Seiko"];
+  }, [watches, dbBrands]);
 
   /* ================================
      FILTER STATES
@@ -137,6 +147,7 @@ function Watches() {
             selectedStyles={selectedStyles}
             setSelectedStyles={setSelectedStyles}
             clearFilters={clearFilters}
+            availableBrands={dynamicBrands}
           />
 
           {/* ================= SIMPLE GRID ================= */}

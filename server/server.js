@@ -2,20 +2,65 @@ const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// Import our models so the server knows what a Watch and Fragrance is
+// Import our models
 const Watch = require('./models/Watch');
 const Fragrance = require('./models/Fragerence');
 const Order = require('./models/Order');
 const User = require('./models/User'); // Added User model for authentication
+const Brand = require('./models/Brand'); // Dynamic Brand House model
+const Category = require('./models/Category'); // Dynamic Category Tier model
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
+// Auto-seed baseline brands & categories if empty
+const seedBaselineBrandsAndCategories = async () => {
+    try {
+        const brandCount = await Brand.countDocuments();
+        if (brandCount === 0) {
+            const defaultBrands = [
+                { name: "Rolex", categoryType: "watches", origin: "Switzerland", description: "Icon of horological prestige and precision" },
+                { name: "Omega", categoryType: "watches", origin: "Switzerland", description: "Pioneering timepieces with space & marine heritage" },
+                { name: "Cartier", categoryType: "both", origin: "France", description: "The jeweler of kings and king of jewelers" },
+                { name: "Tissot", categoryType: "watches", origin: "Switzerland", description: "Innovators by tradition since 1853" },
+                { name: "Seiko", categoryType: "watches", origin: "Japan", description: "Japanese craftsmanship and technical perfection" },
+                { name: "Chanel", categoryType: "fragrances", origin: "France", description: "Timeless Parisian haute parfumerie" },
+                { name: "Creed", categoryType: "fragrances", origin: "France", description: "Seven generations of royal niche artisanal fragrances" },
+                { name: "Versace", categoryType: "fragrances", origin: "Italy", description: "Bold, sensual Milanese luxury perfumes" },
+                { name: "Dior", categoryType: "fragrances", origin: "France", description: "Haute couture elegance and refined French scents" },
+                { name: "Tom Ford", categoryType: "fragrances", origin: "United States", description: "Private blend modern glamour and sensual sophistication" }
+            ];
+            await Brand.insertMany(defaultBrands);
+            console.log('Seeded default luxury brands into MongoDB.');
+        }
+
+        const catCount = await Category.countDocuments();
+        if (catCount === 0) {
+            const defaultCategories = [
+                { name: "Luxury", categoryType: "both", description: "Top-tier flagship timepieces and prestige parfums" },
+                { name: "Premium", categoryType: "both", description: "High-spec craftsmanship and elevated editions" },
+                { name: "Classic", categoryType: "both", description: "Timeless heritage designs and vintage appeal" },
+                { name: "Standard", categoryType: "both", description: "Accessible luxury for refined daily lifestyle" },
+                { name: "Niche", categoryType: "fragrances", description: "Artisanal, rare formulation perfume houses" },
+                { name: "Designer", categoryType: "fragrances", description: "Celebrated runway couture fragrance lines" },
+                { name: "Private Blend", categoryType: "fragrances", description: "Exclusive small-batch high perfumery creations" }
+            ];
+            await Category.insertMany(defaultCategories);
+            console.log('Seeded default catalog categories into MongoDB.');
+        }
+    } catch (err) {
+        console.error('Error auto-seeding brands/categories:', err);
+    }
+};
+
 // Connect to local MongoDB Compass
 mongoose.connect('mongodb://127.0.0.1:27017/chronoscent')
-    .then(() => console.log('Successfully connected to MongoDB!'))
+    .then(() => {
+        console.log('Successfully connected to MongoDB!');
+        seedBaselineBrandsAndCategories();
+    })
     .catch((error) => console.error('MongoDB connection error:', error));
 
 // ==========================================
@@ -162,9 +207,293 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+// Admin: Update order status (Processing, Shipped, Delivered, Cancelled)
+app.put('/api/orders/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body;
+        const updatedOrder = await Order.findByIdAndUpdate(
+            req.params.id, 
+            { status }, 
+            { new: true }
+        );
+        if (!updatedOrder) return res.status(404).json({ message: "Order not found" });
+        res.json(updatedOrder);
+    } catch (error) {
+        res.status(500).json({ message: "Error updating order status", error });
+    }
+});
+
+// Admin: Delete an order
+app.delete('/api/orders/:id', async (req, res) => {
+    try {
+        await Order.findByIdAndDelete(req.params.id);
+        res.json({ message: "Order deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting order", error });
+    }
+});
+
 // ==========================================
-// AUTHENTICATION ROUTES (Student Level - Simple)
+// BRAND & CATEGORY DYNAMIC CRUD MANAGEMENT
 // ==========================================
+
+// Get all brands (with optional filter by ?type=watches|fragrances)
+app.get('/api/brands', async (req, res) => {
+    try {
+        const { type } = req.query;
+        let query = {};
+        if (type && type !== 'all') {
+            query = { categoryType: { $in: [type, 'both'] } };
+        }
+        const brands = await Brand.find(query).sort({ name: 1 });
+        res.json(brands);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching brands", error });
+    }
+});
+
+// Admin: Add a new Brand
+app.post('/api/brands', async (req, res) => {
+    try {
+        const { name, categoryType, origin, description } = req.body;
+        if (!name || !name.trim()) {
+            return res.status(400).json({ message: "Brand name is required" });
+        }
+
+        // Case-insensitive check
+        const existing = await Brand.findOne({ name: { $regex: new RegExp(`^${name.trim()}$`, 'i') } });
+        if (existing) {
+            return res.status(400).json({ message: `Brand "${name.trim()}" already exists!` });
+        }
+
+        const newBrand = new Brand({
+            name: name.trim(),
+            categoryType: categoryType || 'both',
+            origin: origin ? origin.trim() : 'International',
+            description: description ? description.trim() : ''
+        });
+        await newBrand.save();
+        res.status(201).json({ message: "Brand created successfully", brand: newBrand });
+    } catch (error) {
+        res.status(500).json({ message: "Error creating brand", error });
+    }
+});
+
+// Admin: Update Brand
+app.put('/api/brands/:id', async (req, res) => {
+    try {
+        const { name, categoryType, origin, description } = req.body;
+        const brand = await Brand.findById(req.params.id);
+        if (!brand) {
+            return res.status(404).json({ message: "Brand not found" });
+        }
+
+        const oldName = brand.name;
+        const newName = name ? name.trim() : oldName;
+
+        // If renaming brand name, cascade update to watches and fragrances
+        if (newName !== oldName) {
+            const conflict = await Brand.findOne({ 
+                _id: { $ne: brand._id }, 
+                name: { $regex: new RegExp(`^${newName}$`, 'i') } 
+            });
+            if (conflict) {
+                return res.status(400).json({ message: `Another brand already uses the name "${newName}"` });
+            }
+            await Watch.updateMany({ brand: oldName }, { brand: newName });
+            await Fragrance.updateMany({ brand: oldName }, { brand: newName });
+        }
+
+        brand.name = newName;
+        if (categoryType) brand.categoryType = categoryType;
+        if (origin !== undefined) brand.origin = origin.trim();
+        if (description !== undefined) brand.description = description.trim();
+
+        await brand.save();
+        res.json({ message: "Brand updated successfully", brand });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating brand", error });
+    }
+});
+
+// Admin: Delete Brand
+app.delete('/api/brands/:id', async (req, res) => {
+    try {
+        const brand = await Brand.findById(req.params.id);
+        if (!brand) {
+            return res.status(404).json({ message: "Brand not found" });
+        }
+        await Brand.findByIdAndDelete(req.params.id);
+        res.json({ message: `Brand "${brand.name}" removed successfully` });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting brand", error });
+    }
+});
+
+// Get all categories (with optional filter by ?type=watches|fragrances)
+app.get('/api/categories', async (req, res) => {
+    try {
+        const { type } = req.query;
+        let query = {};
+        if (type && type !== 'all') {
+            query = { categoryType: { $in: [type, 'both'] } };
+        }
+        const categories = await Category.find(query).sort({ name: 1 });
+        res.json(categories);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching categories", error });
+    }
+});
+
+// Admin: Add a new Category
+app.post('/api/categories', async (req, res) => {
+    try {
+        const { name, categoryType, description } = req.body;
+        if (!name || !name.trim()) {
+            return res.status(400).json({ message: "Category name is required" });
+        }
+
+        const existing = await Category.findOne({ name: { $regex: new RegExp(`^${name.trim()}$`, 'i') } });
+        if (existing) {
+            return res.status(400).json({ message: `Category "${name.trim()}" already exists!` });
+        }
+
+        const newCategory = new Category({
+            name: name.trim(),
+            categoryType: categoryType || 'both',
+            description: description ? description.trim() : ''
+        });
+        await newCategory.save();
+        res.status(201).json({ message: "Category created successfully", category: newCategory });
+    } catch (error) {
+        res.status(500).json({ message: "Error creating category", error });
+    }
+});
+
+// Admin: Update Category
+app.put('/api/categories/:id', async (req, res) => {
+    try {
+        const { name, categoryType, description } = req.body;
+        const category = await Category.findById(req.params.id);
+        if (!category) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+
+        const oldName = category.name;
+        const newName = name ? name.trim() : oldName;
+
+        if (newName !== oldName) {
+            const conflict = await Category.findOne({ 
+                _id: { $ne: category._id }, 
+                name: { $regex: new RegExp(`^${newName}$`, 'i') } 
+            });
+            if (conflict) {
+                return res.status(400).json({ message: `Another category already uses the name "${newName}"` });
+            }
+            await Watch.updateMany({ category: oldName }, { category: newName });
+            await Fragrance.updateMany({ category: oldName }, { category: newName });
+        }
+
+        category.name = newName;
+        if (categoryType) category.categoryType = categoryType;
+        if (description !== undefined) category.description = description.trim();
+
+        await category.save();
+        res.json({ message: "Category updated successfully", category });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating category", error });
+    }
+});
+
+// Admin: Delete Category
+app.delete('/api/categories/:id', async (req, res) => {
+    try {
+        const category = await Category.findById(req.params.id);
+        if (!category) {
+            return res.status(404).json({ message: "Category not found" });
+        }
+        await Category.findByIdAndDelete(req.params.id);
+        res.json({ message: `Category "${category.name}" removed successfully` });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting category", error });
+    }
+});
+
+// Admin: Legacy bulk rename brand across all catalog items
+app.put('/api/brands/rename', async (req, res) => {
+    try {
+        const { oldBrand, newBrand } = req.body;
+        if (!oldBrand || !newBrand) {
+            return res.status(400).json({ message: "Both oldBrand and newBrand are required" });
+        }
+        await Watch.updateMany({ brand: oldBrand }, { brand: newBrand });
+        await Fragrance.updateMany({ brand: oldBrand }, { brand: newBrand });
+        await Brand.findOneAndUpdate({ name: oldBrand }, { name: newBrand });
+        res.json({ message: `Successfully updated brand from ${oldBrand} to ${newBrand}` });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating brand", error });
+    }
+});
+
+// Admin: Legacy bulk rename category across all catalog items
+app.put('/api/categories/rename', async (req, res) => {
+    try {
+        const { oldCategory, newCategory } = req.body;
+        if (!oldCategory || !newCategory) {
+            return res.status(400).json({ message: "Both oldCategory and newCategory are required" });
+        }
+        await Watch.updateMany({ category: oldCategory }, { category: newCategory });
+        await Fragrance.updateMany({ category: oldCategory }, { category: newCategory });
+        await Category.findOneAndUpdate({ name: oldCategory }, { name: newCategory });
+        res.json({ message: `Successfully updated category from ${oldCategory} to ${newCategory}` });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating category", error });
+    }
+});
+
+// ==========================================
+// AUTHENTICATION & USER MANAGEMENT
+// ==========================================
+
+// Get all users (For Admin Console - Customers Tab)
+app.get('/api/users', async (req, res) => {
+    try {
+        const users = await User.find().select("-password").sort({ _id: -1 });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching users", error });
+    }
+});
+
+// Admin: Toggle User Status (Active or Blocked)
+app.put('/api/users/:id/status', async (req, res) => {
+    try {
+        const { status } = req.body; // 'active' or 'blocked'
+        const updatedUser = await User.findByIdAndUpdate(
+            req.params.id, 
+            { status }, 
+            { new: true }
+        ).select("-password");
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({ message: `User marked as ${status}`, user: updatedUser });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating user status", error });
+    }
+});
+
+// Admin: Delete a User
+app.delete('/api/users/:id', async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.json({ message: "User deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting user", error });
+    }
+});
 
 // Register a new user
 app.post('/api/register', async (req, res) => {
@@ -175,11 +504,19 @@ app.post('/api/register', async (req, res) => {
             return res.status(400).json({ message: "User with this email already exists" });
         }
 
-        // Create new user (saving password as plain text for simplicity, usually you would hash it)
-        const newUser = new User(req.body);
+        // Create new user
+        const role = req.body.email === 'admin@chronoscent.com' ? 'admin' : (req.body.role || 'user');
+        const newUser = new User({
+            ...req.body,
+            role,
+            status: "active"
+        });
         await newUser.save();
         
-        res.status(201).json({ message: "User registered successfully", user: { name: newUser.name, email: newUser.email } });
+        res.status(201).json({ 
+            message: "User registered successfully", 
+            user: { name: newUser.name, email: newUser.email, role: newUser.role, status: newUser.status } 
+        });
     } catch (error) {
         res.status(500).json({ message: "Error registering user", error });
     }
@@ -190,16 +527,41 @@ app.post('/api/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        // Find the user by email
-        const user = await User.findOne({ email });
+        // Auto-provision admin account if logging in with default admin credentials
+        let user = await User.findOne({ email });
+        if (!user && email === 'admin@chronoscent.com' && password === 'admin123') {
+            user = new User({
+                name: "Executive Administrator",
+                email: "admin@chronoscent.com",
+                password: "admin123",
+                role: "admin",
+                status: "active"
+            });
+            await user.save();
+        }
 
         // If user doesn't exist or password doesn't match
         if (!user || user.password !== password) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        // Check if user account is blocked
+        if (user.status === 'blocked') {
+            return res.status(403).json({ message: "Your account has been suspended by the administrator." });
+        }
+
+        const role = user.role || (user.email === 'admin@chronoscent.com' ? 'admin' : 'user');
+
         // Login successful
-        res.json({ message: "Login successful", user: { name: user.name, email: user.email } });
+        res.json({ 
+            message: "Login successful", 
+            user: { 
+                name: user.name, 
+                email: user.email, 
+                role: role,
+                status: user.status || "active"
+            } 
+        });
     } catch (error) {
         res.status(500).json({ message: "Error logging in", error });
     }

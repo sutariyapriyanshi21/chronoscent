@@ -7,17 +7,31 @@ function Checkout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const user = localStorage.getItem("chronoscent_user");
-    if (!user) {
+    try {
+      const storedUser = localStorage.getItem("chronoscent_user");
+      if (!storedUser) {
+        navigate("/login", { state: { from: "/checkout" } });
+      } else {
+        const user = JSON.parse(storedUser);
+        setFormData((prev) => ({
+          ...prev,
+          name: user?.name || prev.name || "",
+          email: user?.email || prev.email || ""
+        }));
+      }
+    } catch {
       navigate("/login", { state: { from: "/checkout" } });
     }
   }, [navigate]);
-  
+
   const [formData, setFormData] = useState(() => {
     let savedUser = null;
     try {
-      savedUser = JSON.parse(localStorage.getItem("chronoscent_user"));
-    } catch {}
+      const stored = localStorage.getItem("chronoscent_user");
+      if (stored) {
+        savedUser = JSON.parse(stored);
+      }
+    } catch { }
 
     return {
       name: savedUser?.name || "",
@@ -35,7 +49,7 @@ function Checkout() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Prepare data matching our Mongoose Schema
     const orderData = {
       customerInfo: {
@@ -88,37 +102,89 @@ function Checkout() {
     <section className="checkout-page py-5">
       <div className="container">
         <h1 className="mb-4">Checkout</h1>
-        
+
         <div className="row g-5">
           <div className="col-lg-8">
             <div className="card shadow-sm border-0 p-4">
               <h3 className="mb-4">Shipping Information</h3>
               <form onSubmit={handleSubmit}>
-                
+
                 <div className="row g-3 mb-3">
                   <div className="col-md-6">
-                    <label className="form-label">Full Name</label>
-                    <input type="text" className="form-control" name="name" required onChange={handleChange} />
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label mb-0">Full Name</label>
+                      {formData.name && (
+                        <small className="text-success fw-semibold" style={{ fontSize: "0.75rem" }}>
+                          ✓ Auto-filled
+                        </small>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="name"
+                      value={formData.name}
+                      required
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label">Email Address</label>
-                    <input type="email" className="form-control" name="email" required onChange={handleChange} />
+                    <div className="d-flex justify-content-between align-items-center mb-1">
+                      <label className="form-label mb-0">Email Address</label>
+                      {formData.email && (
+                        <small className="text-success fw-semibold" style={{ fontSize: "0.75rem" }}>
+                          ✓ Account Email
+                        </small>
+                      )}
+                    </div>
+                    <input
+                      type="email"
+                      className="form-control"
+                      name="email"
+                      value={formData.email}
+                      required
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
 
                 <div className="mb-3">
                   <label className="form-label">Street Address</label>
-                  <input type="text" className="form-control" name="address" required onChange={handleChange} />
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="address"
+                    value={formData.address}
+                    placeholder="House / Flat / Street address"
+                    required
+                    onChange={handleChange}
+                  />
                 </div>
 
                 <div className="row g-3 mb-4">
                   <div className="col-md-6">
                     <label className="form-label">City</label>
-                    <input type="text" className="form-control" name="city" required onChange={handleChange} />
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="city"
+                      value={formData.city}
+                      placeholder="e.g. Mumbai, Surat, Delhi..."
+                      required
+                      onChange={handleChange}
+                    />
                   </div>
                   <div className="col-md-6">
-                    <label className="form-label">Zip Code</label>
-                    <input type="text" className="form-control" name="zip" required onChange={handleChange} />
+                    <label className="form-label">Pin Code</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="zip"
+                      value={formData.zip}
+                      placeholder="e.g. 395007"
+                      required
+                      onChange={handleChange}
+                    />
                   </div>
                 </div>
 
@@ -136,7 +202,7 @@ function Checkout() {
                 <button type="submit" className="btn btn-dark w-100 py-3 fw-bold fs-5">
                   Confirm Order - ₹{total.toLocaleString("en-IN")}
                 </button>
-                
+
               </form>
             </div>
           </div>

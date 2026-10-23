@@ -9,6 +9,12 @@ import {
   FiMenu,
   FiX,
   FiLogOut,
+  FiShield,
+  FiGrid,
+  FiPackage,
+  FiShoppingBag,
+  FiUsers,
+  FiChevronRight
 } from "react-icons/fi";
 import { useCart } from "../context/CartContext";
 import { useWishlist } from "../context/WishlistContext";
@@ -32,6 +38,8 @@ function Navbar() {
       return null;
     }
   });
+
+  const isAdmin = currentUser?.role === "admin" || currentUser?.email === "admin@chronoscent.com";
 
   // Listen for login/logout events across components
   useEffect(() => {
@@ -67,7 +75,7 @@ function Navbar() {
     setCurrentUser(null);
     setUserMenuOpen(false);
     window.dispatchEvent(new Event("authChange"));
-    alert("You have successfully logged out.");
+    
   };
 
   const { totalItems } = useCart();
@@ -205,21 +213,30 @@ function Navbar() {
               <div className="position-relative" ref={userMenuRef}>
                 <button
                   type="button"
-                  className="icon-btn"
+                  className={`icon-btn ${isAdmin ? "icon-btn-admin" : ""}`}
                   aria-label="Account Menu"
-                  title={`Logged in as ${currentUser.name}`}
+                  title={isAdmin ? `Administrator: ${currentUser.name}` : `Logged in as ${currentUser.name}`}
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                 >
-                  <FiUser />
+                  {isAdmin ? <FiShield /> : <FiUser />}
                 </button>
 
                 {userMenuOpen && (
                   <div 
-                    className="position-absolute end-0 mt-2 p-3 bg-white shadow rounded border"
-                    style={{ minWidth: '200px', zIndex: 1050 }}
+                    className="position-absolute end-0 mt-2 p-3 bg-white shadow-lg rounded-3 border admin-user-dropdown"
+                    style={{ minWidth: '240px', zIndex: 1050 }}
                   >
                     <div className="mb-2">
-                      <small className="text-muted d-block" style={{ fontSize: '0.75rem' }}>SIGNED IN AS</small>
+                      <div className="d-flex align-items-center justify-content-between mb-1">
+                        <small className="text-muted fw-bold" style={{ fontSize: '0.7rem', letterSpacing: '0.5px' }}>
+                          SIGNED IN AS
+                        </small>
+                        {isAdmin && (
+                          <span className="admin-role-badge">
+                            ADMIN
+                          </span>
+                        )}
+                      </div>
                       <strong className="d-block text-truncate" style={{ color: '#0f4c81', fontSize: '0.95rem' }}>
                         {currentUser.name}
                       </strong>
@@ -227,6 +244,54 @@ function Navbar() {
                         {currentUser.email}
                       </small>
                     </div>
+
+                    {isAdmin && (
+                      <>
+                        <hr className="my-2" />
+                        <div className="admin-menu-list">
+                          <small className="text-muted d-block fw-bold mb-1" style={{ fontSize: '0.68rem', letterSpacing: '0.5px' }}>
+                            ADMIN SHORTCUTS
+                          </small>
+                          <Link
+                            to="/admin"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="admin-menu-item"
+                          >
+                            <FiGrid size={14} className="text-primary" />
+                            <span>Dashboard Overview</span>
+                            <FiChevronRight size={12} className="ms-auto text-muted" />
+                          </Link>
+                          <Link
+                            to="/admin?tab=orders"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="admin-menu-item"
+                          >
+                            <FiPackage size={14} className="text-info" />
+                            <span>Manage Orders</span>
+                            <FiChevronRight size={12} className="ms-auto text-muted" />
+                          </Link>
+                          <Link
+                            to="/admin?tab=products"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="admin-menu-item"
+                          >
+                            <FiShoppingBag size={14} className="text-success" />
+                            <span>Product Catalog</span>
+                            <FiChevronRight size={12} className="ms-auto text-muted" />
+                          </Link>
+                          <Link
+                            to="/admin?tab=customers"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="admin-menu-item"
+                          >
+                            <FiUsers size={14} className="text-warning" />
+                            <span>Customer Accounts</span>
+                            <FiChevronRight size={12} className="ms-auto text-muted" />
+                          </Link>
+                        </div>
+                      </>
+                    )}
+
                     <hr className="my-2" />
                     <button
                       type="button"
@@ -340,6 +405,39 @@ function Navbar() {
               </NavLink>
 
             </div>
+
+
+            {/* Mobile Admin Panel */}
+            {isAdmin && (
+              <div className="mobile-admin-panel">
+                <div className="d-flex align-items-center justify-content-between mb-2">
+                  <span className="admin-role-badge">
+                    <FiShield size={11} className="me-1" /> ADMINISTRATOR
+                  </span>
+                  <small className="text-muted text-truncate" style={{ maxWidth: '140px' }}>
+                    {currentUser.name}
+                  </small>
+                </div>
+                <Link
+                  to="/admin"
+                  onClick={closeMenu}
+                  className="mobile-admin-main-btn"
+                >
+                  <FiGrid size={15} /> Go to Admin Dashboard
+                </Link>
+                <div className="mobile-admin-quick-links">
+                  <Link to="/admin?tab=orders" onClick={closeMenu}>
+                    <FiPackage size={13} /> Orders
+                  </Link>
+                  <Link to="/admin?tab=products" onClick={closeMenu}>
+                    <FiShoppingBag size={13} /> Products
+                  </Link>
+                  <Link to="/admin?tab=customers" onClick={closeMenu}>
+                    <FiUsers size={13} /> Users
+                  </Link>
+                </div>
+              </div>
+            )}
 
 
             {/* Mobile Icons */}

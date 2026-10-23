@@ -8,8 +8,11 @@ function WatchFilters({
   selectedStyles,
   setSelectedStyles,
   clearFilters,
+  availableBrands = ["Rolex", "Omega", "Cartier", "Tissot", "Seiko"]
 }) {
-  const brands = ["Rolex", "Omega", "Cartier", "Tissot", "Seiko"];
+  const brands = availableBrands && availableBrands.length > 0 
+    ? availableBrands 
+    : ["Rolex", "Omega", "Cartier", "Tissot", "Seiko"];
   const genders = ["Men", "Women", "Unisex"];
   const styles = ["Classic", "Diver", "Dress", "Sport"];
 

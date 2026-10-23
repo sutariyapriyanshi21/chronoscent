@@ -24,14 +24,7 @@ function Footer() {
               for those who appreciate timeless elegance.
             </p>
 
-            <div className="social-icons">
-
-              <i className="bi bi-instagram"></i>
-              <i className="bi bi-facebook"></i>
-              <i className="bi bi-twitter-x"></i>
-              <i className="bi bi-youtube"></i>
-
-            </div>
+           
 
           </div>
 

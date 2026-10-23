@@ -8,8 +8,11 @@ function FragranceFilters({
   selectedStyles,
   setSelectedStyles,
   clearFilters,
+  availableBrands = ["Dior", "Chanel", "Tom Ford", "Versace", "Creed"]
 }) {
-  const brands = ["Dior", "Chanel", "Tom Ford", "Versace", "Creed"];
+  const brands = availableBrands && availableBrands.length > 0
+    ? availableBrands
+    : ["Dior", "Chanel", "Tom Ford", "Versace", "Creed"];
   const genders = ["Men", "Women", "Unisex"];
   const styles = ["Floral", "Woody", "Fresh", "Oriental", "Fruity"];
 

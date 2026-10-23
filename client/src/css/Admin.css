@@ -1,155 +1,696 @@
-/* =========================================
-   CHRONOSCENT ELITE - ADMIN CONSOLE STYLES
-========================================= */
+/* ========================================================
+   CHRONOSCENT ELITE - EXECUTIVE ADMIN CONSOLE
+   Clean, Minimal, Sober Dashboard Styling
+   ======================================================== */
 
-.admin-wrapper {
-  background-color: #F8FAFC;
+:root {
+  --admin-bg: #F8FAFC;
+  --admin-card-bg: #FFFFFF;
+  --admin-border: #E2E8F0;
+  --admin-border-subtle: #F1F5F9;
+  --admin-text-main: #0F172A;
+  --admin-text-muted: #64748B;
+  --admin-text-light: #94A3B8;
+  --admin-primary: #0F4C81;
+  --admin-primary-hover: #0c3d68;
+  --admin-sidebar-bg: #0F172A;
+  --admin-sidebar-hover: #1E293B;
+  --admin-sidebar-active: #1E293B;
+}
+
+.admin-console-layout {
+  display: flex;
   min-height: 100vh;
-  font-family: var(--font-body, 'Inter', sans-serif);
-  color: #1F2937;
+  background-color: var(--admin-bg);
+  font-family: var(--font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  color: var(--admin-text-main);
 }
 
-.admin-header-bar {
-  background: #FFFFFF;
-  border-bottom: 1px solid #E2E8F0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+/* ========================================================
+   1. SOBER SIDEBAR NAVIGATION
+   ======================================================== */
+.admin-sidebar {
+  width: 250px;
+  background: var(--admin-sidebar-bg);
+  color: #CBD5E1;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 1020;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s ease;
 }
 
-.admin-logo-title {
-  font-family: var(--font-heading, 'Playfair Display', serif);
+.admin-sidebar-brand {
+  padding: 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.admin-brand-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38BDF8;
+}
+
+.admin-brand-name {
+  font-family: var(--font-heading, serif);
+  font-size: 0.92rem;
   font-weight: 700;
-  font-size: 1.35rem;
-  color: #0F4C81;
+  letter-spacing: 0.8px;
+  color: #FFFFFF;
+  line-height: 1.1;
 }
 
-.admin-badge {
-  background-color: #F0F9FF;
-  color: #0F4C81;
-  border: 1px solid #BAE6FD;
-  font-size: 0.72rem;
-  letter-spacing: 0.5px;
-  padding: 4px 10px;
-  font-weight: 600;
-  border-radius: 9999px;
-}
-
-.admin-stat-card {
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.admin-stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(15, 76, 129, 0.06);
-}
-
-.admin-stat-title {
-  font-size: 0.75rem;
+.admin-brand-tag {
+  font-size: 0.6rem;
+  letter-spacing: 1.2px;
+  color: #94A3B8;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #64748B;
-  margin-bottom: 0.25rem;
 }
 
-.admin-stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #0F4C81;
-  margin: 0;
+.admin-sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 0.85rem;
 }
 
-.admin-tab-btn {
-  border: 1px solid #E2E8F0;
-  background: #FFFFFF;
-  color: #475569;
+.admin-nav-group-label {
+  font-size: 0.65rem;
   font-weight: 600;
-  font-size: 0.88rem;
-  padding: 8px 18px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  color: #64748B;
+  padding: 0.4rem 0.6rem;
+  text-transform: uppercase;
 }
 
-.admin-tab-btn:hover {
+.admin-nav-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  background: transparent;
+  color: #94A3B8;
+  font-size: 0.86rem;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  text-align: left;
+  margin-bottom: 3px;
+  cursor: pointer;
+}
+
+.admin-nav-item:hover {
+  background: var(--admin-sidebar-hover);
+  color: #FFFFFF;
+}
+
+.admin-nav-item.active {
+  background: var(--admin-sidebar-active);
+  color: #FFFFFF;
+  font-weight: 600;
+  border-left: 3px solid #38BDF8;
+}
+
+.admin-nav-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.admin-nav-badge {
+  margin-left: auto;
+  font-size: 0.7rem;
+  background: #1E293B;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1px 7px;
+  border-radius: 9999px;
+  color: #CBD5E1;
+  font-weight: 500;
+}
+
+.admin-nav-item.active .admin-nav-badge {
+  background: #334155;
+  color: #F8FAFC;
+}
+
+.admin-sidebar-footer {
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.admin-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1E293B;
+  border: 1px solid #334155;
+  color: #F8FAFC;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.admin-user-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #FFFFFF;
+  max-width: 120px;
+}
+
+.admin-user-role {
+  font-size: 0.68rem;
+  color: #94A3B8;
+}
+
+.admin-logout-btn {
+  color: #94A3B8;
+  transition: color 0.15s ease;
+}
+
+.admin-logout-btn:hover {
+  color: #EF4444 !important;
+}
+
+/* ========================================================
+   2. TOPBAR & MAIN WRAPPER
+   ======================================================== */
+.admin-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background-color: var(--admin-bg);
+}
+
+.admin-topbar {
+  height: 60px;
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--admin-border);
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.admin-search-form {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.admin-search-input {
+  background: #F8FAFC;
+  border: 1px solid var(--admin-border);
+  border-radius: 6px;
+  padding: 0.38rem 0.75rem;
+  font-size: 0.84rem;
+  width: 260px;
+  color: var(--admin-text-main);
+  transition: all 0.15s ease;
+}
+
+.admin-search-input:focus {
+  background: #FFFFFF;
+  border-color: #0F4C81;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(15, 76, 129, 0.1);
+}
+
+.admin-search-button {
+  background: #1E293B;
+  color: #FFFFFF;
+  border: 1px solid #1E293B;
+  padding: 0.38rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-search-button:hover {
+  background: #0F172A;
+}
+
+.admin-btn-boutique {
+  border: 1px solid var(--admin-border);
+  background: #FFFFFF;
+  color: #334155;
+  font-weight: 500;
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  transition: all 0.15s ease;
+}
+
+.admin-btn-boutique:hover {
+  background: #F1F5F9;
+  color: #0F172A;
+}
+
+.admin-profile-badge {
+  display: flex;
+  align-items: center;
+}
+
+.admin-profile-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #1E293B;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-hamburger-btn {
+  background: transparent;
+  border: 1px solid var(--admin-border);
+  color: #334155;
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+}
+
+/* ========================================================
+   3. SOBER KPI METRIC CARDS
+   ======================================================== */
+.admin-canvas {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.admin-metric-card {
+  background: #FFFFFF;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 1.15rem;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  height: 100%;
+}
+
+.admin-metric-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.admin-metric-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.admin-metric-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--admin-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-metric-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-metric-icon.ocean {
   background: #F1F5F9;
   color: #0F4C81;
 }
 
-.admin-tab-btn.active {
-  background: #0F4C81;
-  color: #FFFFFF;
-  border-color: #0F4C81;
-  box-shadow: 0 2px 6px rgba(15, 76, 129, 0.2);
+.admin-metric-icon.amber {
+  background: #FEF3C7;
+  color: #B45309;
 }
 
-.admin-card {
+.admin-metric-icon.sky {
+  background: #E0F2FE;
+  color: #0284C7;
+}
+
+.admin-metric-icon.emerald {
+  background: #DCFCE7;
+  color: #15803D;
+}
+
+.admin-metric-value {
+  font-size: 1.65rem;
+  font-weight: 700;
+  color: var(--admin-text-main);
+  line-height: 1.2;
+}
+
+.admin-metric-sub {
+  font-size: 0.75rem;
+  color: var(--admin-text-light);
+  margin-top: 0.35rem;
+}
+
+/* ========================================================
+   4. SOBER PANEL CARD & TABLES
+   ======================================================== */
+.admin-panel-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 12px;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  margin-bottom: 1.5rem;
 }
 
-.admin-card-header {
+.admin-panel-header {
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border);
   background: #FFFFFF;
-  border-bottom: 1px solid #F1F5F9;
-  padding: 1rem 1.5rem;
+}
+
+.admin-panel-title {
+  font-weight: 600;
+  color: var(--admin-text-main);
+  font-size: 0.95rem;
 }
 
 .admin-table th {
   background: #F8FAFC;
   color: #475569;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #E2E8F0;
-  padding: 12px 16px;
+  border-bottom: 1px solid var(--admin-border);
+  padding: 10px 14px;
+  white-space: nowrap;
 }
 
 .admin-table td {
-  padding: 14px 16px;
+  padding: 12px 14px;
   vertical-align: middle;
-  border-bottom: 1px solid #F1F5F9;
-  font-size: 0.9rem;
+  border-bottom: 1px solid var(--admin-border-subtle);
+  font-size: 0.85rem;
+  color: #334155;
 }
 
 .admin-table tr:hover td {
   background-color: #F8FAFC;
 }
 
-.admin-btn-primary {
+.admin-product-thumb {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border-radius: 6px;
+  background-color: #F8FAFC;
+  border: 1px solid var(--admin-border);
+}
+
+.text-ocean {
+  color: #0F4C81 !important;
+}
+
+.admin-btn-ocean {
   background-color: #0F4C81;
   border-color: #0F4C81;
   color: #FFFFFF;
   font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 }
 
-.admin-btn-primary:hover {
-  background-color: #165A95;
-  border-color: #165A95;
+.admin-btn-ocean:hover {
+  background-color: #0c3d68;
+  border-color: #0c3d68;
   color: #FFFFFF;
 }
 
+.admin-btn-primary {
+  background-color: #1E293B;
+  border-color: #1E293B;
+  color: #FFFFFF;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.admin-btn-primary:hover {
+  background-color: #0F172A;
+  border-color: #0F172A;
+  color: #FFFFFF;
+}
+
+/* ========================================================
+   5. BRAND & CATEGORY CARDS (SOBER DESIGN)
+   ======================================================== */
+.admin-entity-card {
+  background: #FFFFFF;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 1.1rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.15s ease;
+}
+
+.admin-entity-card:hover {
+  border-color: #CBD5E1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+}
+
+.admin-tag-pill {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
+
+.admin-tag-pill.watches {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border-color: #DBEAFE;
+}
+
+.admin-tag-pill.fragrances {
+  background: #FAF5FF;
+  color: #7E22CE;
+  border-color: #F3E8FF;
+}
+
+.admin-tag-pill.both {
+  background: #ECFDF5;
+  color: #047857;
+  border-color: #D1FAE5;
+}
+
+/* ========================================================
+   6. MODAL & FORMS (CLEAN & SOBER)
+   ======================================================== */
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.admin-modal-card {
+  background: #FFFFFF;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-modal-header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--admin-border);
+  background-color: #F8FAFC;
+}
+
+.admin-modal-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--admin-text-main);
+}
+
+/* ========================================================
+   7. STATUSES & BADGES
+   ======================================================== */
+.status-select {
+  border-radius: 4px;
+  font-size: 0.78rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  border: 1px solid #CBD5E1;
+}
+
+.status-processing {
+  background-color: #FFFBEB;
+  color: #B45309;
+  border-color: #FDE68A;
+}
+
+.status-shipped {
+  background-color: #EFF6FF;
+  color: #1D4ED8;
+  border-color: #BFDBFE;
+}
+
+.status-delivered {
+  background-color: #F0FDF4;
+  color: #15803D;
+  border-color: #BBF7D0;
+}
+
+.status-cancelled {
+  background-color: #FEF2F2;
+  color: #B91C1C;
+  border-color: #FECACA;
+}
+
+.user-row-blocked {
+  background-color: #FFF5F5 !important;
+}
+
+.customer-avatar-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  color: #334155;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  border: 1px solid var(--admin-border);
+}
+
+.customer-avatar-badge.blocked {
+  background: #FEE2E2;
+  color: #DC2626;
+  border-color: #FCA5A5;
+}
+
+/* ========================================================
+   8. LOCK SCREEN (SOBER LOGIN FALLBACK)
+   ======================================================== */
 .admin-lock-screen {
   min-height: 100vh;
-  background: radial-gradient(circle at top right, #F0F9FF, #F8FAFC);
+  background: #F8FAFC;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  font-family: var(--font-body, sans-serif);
 }
 
 .admin-lock-card {
   background: #FFFFFF;
-  border: 1px solid #E2E8F0;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(15, 76, 129, 0.08);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
   width: 100%;
-  max-width: 440px;
-  padding: 2.5rem;
+  max-width: 400px;
+  padding: 2rem;
+}
+
+.admin-lock-icon-wrap {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #F1F5F9;
+  color: #0F4C81;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.admin-lock-title {
+  color: var(--admin-text-main);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+/* ========================================================
+   9. RESPONSIVENESS & UTILS
+   ======================================================== */
+@media (max-width: 991px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    left: -260px;
+    bottom: 0;
+    width: 250px;
+    z-index: 1050;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.15);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(260px);
+  }
+
+  .admin-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
+    z-index: 1040;
+  }
+
+  .admin-search-input {
+    width: 140px;
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }

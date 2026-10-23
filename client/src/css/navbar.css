@@ -236,3 +236,129 @@
     }
 
 }
+
+/* =========================================
+   ADMIN DROPDOWN & MOBILE STYLES
+========================================= */
+
+.icon-btn-admin {
+    border: 1.5px solid #0f4c81 !important;
+    background: #eff6ff !important;
+    color: #0f4c81 !important;
+}
+
+.icon-btn-admin:hover {
+    background: #0f4c81 !important;
+    color: #ffffff !important;
+}
+
+.admin-role-badge {
+    background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+    color: #92400E;
+    border: 1px solid #F59E0B;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 7px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    text-transform: uppercase;
+}
+
+.admin-user-dropdown {
+    animation: adminDropdownFade 0.18s ease-out;
+    box-shadow: 0 12px 28px -4px rgba(15, 76, 129, 0.16), 0 8px 12px -6px rgba(15, 76, 129, 0.08) !important;
+}
+
+@keyframes adminDropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.admin-menu-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.admin-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    color: #1e293b;
+    font-size: 0.83rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.18s ease;
+}
+
+.admin-menu-item:hover {
+    background: #f1f5f9;
+    color: #0f4c81;
+    transform: translateX(3px);
+}
+
+.mobile-admin-panel {
+    margin: 14px 6px 8px;
+    padding: 12px;
+    background: linear-gradient(145deg, #f8fafc, #edf2f7);
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+}
+
+.mobile-admin-main-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #0B1E36;
+    color: #ffffff !important;
+    font-size: 0.83rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    margin-bottom: 8px;
+}
+
+.mobile-admin-main-btn:hover {
+    background: #0f4c81;
+}
+
+.mobile-admin-quick-links {
+    display: flex;
+    gap: 6px;
+}
+
+.mobile-admin-quick-links a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 4px;
+    font-size: 0.76rem;
+    font-weight: 500;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    color: #334155;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.mobile-admin-quick-links a:hover {
+    background: #f1f5f9;
+    color: #0f4c81;
+    border-color: #94a3b8;
+}

@@ -18,7 +18,8 @@ const orderSchema = new mongoose.Schema({
     },
     orderItems: [orderItemSchema],
     totalAmount: { type: Number, required: true },
-    orderDate: { type: Date, default: Date.now }
+    orderDate: { type: Date, default: Date.now },
+    status: { type: String, default: "Processing" } // "Processing", "Shipped", "Delivered", "Cancelled"
 });
 
 const Order = mongoose.model('Order', orderSchema);

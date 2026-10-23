@@ -10,13 +10,28 @@ import "../css/watches.css"; // Note: reuse same css
 function Fragrances() {
   const [fragrances, setFragrances] = useState([]); // <-- State to hold fragrances from database
 
-  // Fetch fragrances from backend when the page loads
+  const [dbBrands, setDbBrands] = useState([]);
+
+  // Fetch fragrances and brands from backend when the page loads
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/fragrances")
       .then((res) => res.json())
       .then((data) => setFragrances(data))
       .catch((err) => console.error("Error fetching fragrances:", err));
+
+    fetch("http://127.0.0.1:5000/api/brands?type=fragrances")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setDbBrands(data.map((b) => b.name));
+      })
+      .catch(() => {});
   }, []);
+
+  const dynamicBrands = useMemo(() => {
+    const fromFragrances = fragrances.map((f) => f.brand).filter(Boolean);
+    const combined = Array.from(new Set([...dbBrands, ...fromFragrances]));
+    return combined.length > 0 ? combined : ["Dior", "Chanel", "Tom Ford", "Versace", "Creed"];
+  }, [fragrances, dbBrands]);
 
   /* ================================
      FILTER STATES
@@ -129,6 +144,7 @@ function Fragrances() {
             selectedStyles={selectedStyles}
             setSelectedStyles={setSelectedStyles}
             clearFilters={clearFilters}
+            availableBrands={dynamicBrands}
           />
 
           {/* ================= SIMPLE GRID ================= */}

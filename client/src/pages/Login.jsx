@@ -47,10 +47,13 @@ function Login() {
         setEmail("");
         setPassword("");
         
-        const destination = location.state?.from || "/";
         setTimeout(() => {
-          alert(`Welcome back, ${data.user.name}!`);
-          navigate(destination);
+          if (data.user.role === "admin") {
+            navigate("/admin");
+          } else {
+            const destination = location.state?.from || "/";
+            navigate(destination);
+          }
         }, 100);
       } else {
         setError(data.message || "Invalid email or password.");
