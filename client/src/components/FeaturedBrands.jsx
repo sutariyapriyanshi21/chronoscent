@@ -113,13 +113,9 @@ function FeaturedBrands() {
             </div>
 
             <div className="brands-button">
-
-                <Link to="/watches" className="btn text-decoration-none p-0 border-0" style={{background: 'none', color: 'inherit'}}>
-                    <button>
-                        Explore All Watches →
-                    </button>
+                <Link to="/watches" className="brand-explore-link">
+                    Explore All Watches →
                 </Link>
-
             </div>
 
 
@@ -153,13 +149,9 @@ function FeaturedBrands() {
             </div>
 
             <div className="brands-button">
-
-                <Link to="/Fragrances" className="btn text-decoration-none p-0 border-0" style={{background: 'none', color: 'inherit'}}>
-                    <button>
-                        Explore All Fragrances →
-                    </button>
+                <Link to="/fragrances" className="brand-explore-link">
+                    Explore All Fragrances →
                 </Link>
-
             </div>
 
         </section>

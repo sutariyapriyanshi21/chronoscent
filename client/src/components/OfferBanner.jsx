@@ -24,19 +24,13 @@ function OfferBanner() {
                 </p>
 
                 <div className="offer-buttons">
-
-                    <Link to="/watches" className="text-decoration-none">
-                        <button className="watch-btn">
-                            Shop Watches
-                        </button>
+                    <Link to="/watches" className="banner-link watch-btn">
+                        Shop Watches
                     </Link>
 
-                    <Link to="/Fragrances" className="text-decoration-none">
-                        <button className="perfume-btn">
-                            Shop Fragrances
-                        </button>
+                    <Link to="/fragrances" className="banner-link perfume-btn">
+                        Shop Fragrances
                     </Link>
-
                 </div>
 
             </div>

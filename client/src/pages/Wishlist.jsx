@@ -1,4 +1,3 @@
-import React from 'react';
 import { useWishlist } from '../context/WishlistContext';
 import { useCart } from '../context/CartContext';
 import '../css/Wishlist.css';

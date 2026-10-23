@@ -2,15 +2,12 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import {
   FiPackage,
-  FiClock,
-  FiDroplet,
   FiDollarSign,
   FiLogOut,
   FiPlus,
   FiEdit2,
   FiTrash2,
   FiExternalLink,
-  FiLock,
   FiUsers,
   FiShoppingBag,
   FiTag,
@@ -22,8 +19,6 @@ import {
   FiSearch,
   FiMenu,
   FiX,
-  FiCheckCircle,
-  FiAlertCircle,
   FiSlash,
   FiCheck,
   FiRefreshCw,
@@ -96,12 +91,6 @@ function Admin() {
     categoryType: "both",
     description: ""
   });
-
-  // Rename Brand / Category Modal States
-  const [showRenameModal, setShowRenameModal] = useState(false);
-  const [renameType, setRenameType] = useState("brand"); // 'brand' or 'category'
-  const [oldName, setOldName] = useState("");
-  const [newName, setNewName] = useState("");
 
   // Product Add / Edit Form State
   const [showProductForm, setShowProductForm] = useState(false);
@@ -576,46 +565,6 @@ function Admin() {
       }
     } catch (err) {
       console.error("Error deleting category:", err);
-    }
-  };
-
-  // ========================================================
-  // 6. LEGACY RENAME ACTION
-  // ========================================================
-  const openRenameModal = (type, currentName) => {
-    setRenameType(type);
-    setOldName(currentName);
-    setNewName(currentName);
-    setShowRenameModal(true);
-  };
-
-  const handleRenameSubmit = async (e) => {
-    e.preventDefault();
-    if (!newName.trim() || newName.trim() === oldName) {
-      setShowRenameModal(false);
-      return;
-    }
-
-    const endpoint = renameType === "brand" ? "brands" : "categories";
-    const payload = renameType === "brand"
-      ? { oldBrand: oldName, newBrand: newName.trim() }
-      : { oldCategory: oldName, newCategory: newName.trim() };
-
-    try {
-      const res = await fetch(`http://127.0.0.1:5000/api/${endpoint}/rename`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      if (res.ok) {
-        alert(`Successfully renamed ${renameType} from "${oldName}" to "${newName.trim()}"!`);
-        setShowRenameModal(false);
-        fetchAllData();
-      } else {
-        alert("Failed to update name.");
-      }
-    } catch (err) {
-      console.error("Rename error:", err);
     }
   };
 
@@ -2242,51 +2191,6 @@ function Admin() {
                 </button>
                 <button type="submit" className="btn btn-sm btn-dark px-4">
                   {isEditingCategory ? "Save Changes" : "Create Category"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* RENAME BRAND / CATEGORY MODAL */}
-      {showRenameModal && (
-        <div className="admin-modal-backdrop">
-          <div className="admin-modal-card">
-            <div className="admin-modal-header d-flex justify-content-between align-items-center">
-              <h6 className="mb-0 fw-bold text-ocean">
-                Rename {renameType === "brand" ? "Brand House" : "Category"}
-              </h6>
-              <button
-                className="btn btn-sm btn-close"
-                onClick={() => setShowRenameModal(false)}
-              />
-            </div>
-            <form onSubmit={handleRenameSubmit} className="p-4">
-              <p className="small text-muted mb-3">
-                This will update all watches and fragrances with {renameType} <strong>"{oldName}"</strong>.
-              </p>
-              <div className="mb-3">
-                <label className="form-label small fw-semibold text-muted">NEW {renameType.toUpperCase()} NAME</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  required
-                  autoFocus
-                />
-              </div>
-              <div className="d-flex justify-content-end gap-2">
-                <button
-                  type="button"
-                  className="btn btn-sm btn-outline-secondary"
-                  onClick={() => setShowRenameModal(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="btn btn-sm admin-btn-ocean px-3">
-                  Update All Products
                 </button>
               </div>
             </form>

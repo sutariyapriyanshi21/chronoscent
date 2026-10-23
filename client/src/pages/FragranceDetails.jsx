@@ -13,6 +13,7 @@ function FragranceDetails() {
   const { wishlistItems, addToWishlist } = useWishlist();
 
   const [fragrance, setFragrance] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/api/fragrances/${id}`)
@@ -20,22 +21,41 @@ function FragranceDetails() {
         if (!res.ok) throw new Error("Fragrance not found");
         return res.json();
       })
-      .then((data) => setFragrance(data))
+      .then((data) => {
+        setFragrance(data);
+        setLoading(false);
+      })
       .catch((err) => {
-        console.error("API error, checking static fallback:", err);
+        console.warn("API error, checking static fallback:", err);
         const fallback = staticFragrances.find(
-          (f) => String(f.id) === String(id) || f.name.toLowerCase() === id.toLowerCase()
+          (f) => String(f.id) === String(id) || f._id === id || (f.name && f.name.toLowerCase() === String(id).toLowerCase())
         );
         if (fallback) setFragrance(fallback);
+        setLoading(false);
       });
   }, [id]);
 
   const isInWishlist = fragrance ? wishlistItems.some((item) => item.name === fragrance.name) : false;
 
   /* ================================
+     LOADING STATE
+  ================================= */
+  if (loading) {
+    return (
+      <section className="watch-details-page py-5">
+        <div className="container text-center py-5">
+          <div className="spinner-border text-light mb-3" role="status" style={{ width: "3rem", height: "3rem" }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="text-secondary tracking-wide">Loading fragrance details...</p>
+        </div>
+      </section>
+    );
+  }
+
+  /* ================================
      PRODUCT NOT FOUND
   ================================= */
-
   if (!fragrance) {
     return (
       <section className="watch-details-page py-5">
@@ -50,7 +70,7 @@ function FragranceDetails() {
           </p>
 
           <Link
-            to="/Fragrances"
+            to="/fragrances"
             className="btn btn-primary"
           >
             Back to Fragrances

@@ -1,5 +1,5 @@
 import { FiSearch } from "react-icons/fi";
-import "../watches/WatchSearch.css";
+import "../Watches/WatchSearch.css";
 
 function FragranceSearch({
   searchTerm,

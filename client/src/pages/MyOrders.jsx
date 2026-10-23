@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   FiPackage,
   FiClock,
@@ -17,7 +17,6 @@ import { FaStar } from "react-icons/fa";
 import "../css/MyOrders.css";
 
 function MyOrders() {
-  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem("chronoscent_user");
@@ -103,7 +102,7 @@ function MyOrders() {
         return;
       }
 
-      const updated = await res.json();
+      await res.json();
       setOrders((prev) =>
         prev.map((o) => (o._id === orderId ? { ...o, status: "Cancelled" } : o))
       );

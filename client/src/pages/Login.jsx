@@ -58,7 +58,7 @@ function Login() {
       } else {
         setError(data.message || "Invalid email or password.");
       }
-    } catch (err) {
+    } catch {
       setError("Cannot connect to server. Is the backend running?");
     }
   };

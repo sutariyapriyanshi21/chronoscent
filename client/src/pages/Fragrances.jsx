@@ -4,6 +4,7 @@ import FragranceSearch from "../components/Fragerences/FragranceSearch";
 import FragranceFilters from "../components/Fragerences/FragranceFilters";
 import FragranceCard from "../components/Fragerences/FragranceCard";
 import Footer from "../components/Footer";
+import staticFragrances from "../Data/fragerence";
 
 import "../css/watches.css"; // Note: reuse same css
 
@@ -15,12 +16,24 @@ function Fragrances() {
   // Fetch fragrances and brands from backend when the page loads
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/fragrances")
-      .then((res) => res.json())
-      .then((data) => setFragrances(data))
-      .catch((err) => console.error("Error fetching fragrances:", err));
+      .then((res) => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setFragrances(data);
+        } else {
+          setFragrances(staticFragrances);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using offline static fragrances fallback:", err);
+        setFragrances(staticFragrances);
+      });
 
     fetch("http://127.0.0.1:5000/api/brands?type=fragrances")
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data)) setDbBrands(data.map((b) => b.name));
       })
@@ -151,7 +164,7 @@ function Fragrances() {
           <div className="row g-4 mt-4">
             {filteredFragrances.length > 0 ? (
               filteredFragrances.map((fragrance) => (
-                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={fragrance._id}>
+                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={fragrance._id || fragrance.id}>
                   <FragranceCard fragrance={fragrance} />
                 </div>
               ))

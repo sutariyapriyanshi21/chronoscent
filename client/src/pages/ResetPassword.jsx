@@ -46,7 +46,7 @@ function ResetPassword() {
       } else {
         setError(data.message || "Failed to reset password.");
       }
-    } catch (err) {
+    } catch {
       setError("Cannot connect to server. Is the backend running?");
     }
   };

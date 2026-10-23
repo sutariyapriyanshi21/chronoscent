@@ -1,9 +1,10 @@
 import { useMemo, useState, useEffect } from "react"; // <-- Added useEffect
 
-import WatchSearch from "../components/watches/WatchSearch";
-import WatchFilters from "../components/watches/WatchFilters";
-import WatchCard from "../components/watches/WatchCard";
+import WatchSearch from "../components/Watches/WatchSearch";
+import WatchFilters from "../components/Watches/WatchFilters";
+import WatchCard from "../components/Watches/WatchCard";
 import Footer from "../components/Footer";
+import staticWatches from "../Data/Watches";
 
 import "../css/watches.css";
 
@@ -19,11 +20,20 @@ function Watches() {
         if (!res.ok) throw new Error("Network response was not ok");
         return res.json();
       })
-      .then((data) => setWatches(data))
-      .catch((err) => console.error("Error fetching watches:", err));
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setWatches(data);
+        } else {
+          setWatches(staticWatches);
+        }
+      })
+      .catch((err) => {
+        console.warn("Using offline static watches fallback:", err);
+        setWatches(staticWatches);
+      });
 
     fetch("http://127.0.0.1:5000/api/brands?type=watches")
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (Array.isArray(data)) setDbBrands(data.map((b) => b.name));
       })
@@ -154,7 +164,7 @@ function Watches() {
           <div className="row g-4 mt-4">
             {filteredWatches.length > 0 ? (
               filteredWatches.map((watch) => (
-                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={watch._id}>
+                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={watch._id || watch.id}>
                   <WatchCard watch={watch} />
                 </div>
               ))

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import "../css/Herosection.css";
+import "../css/HeroSection.css";
 
 import hero1 from "../assests/hero/hero1.png";
 import hero2 from "../assests/hero/hero2.jpg";

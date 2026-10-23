@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 // Static fallbacks in case backend is offline
 import rolex from "../assests/Products/rolex.jpg";
 import omega from "../assests/Products/omega.jpg";
-import cartier from "../assests/Products/cartier.jpg";
+import creed from "../assests/Products/Fregerances/Creed Aventus.jpg";
 import chanel from "../assests/Products/channel.jpg";
 
 function FeaturedProducts() {
@@ -46,7 +46,7 @@ function FeaturedProducts() {
         setFeaturedProducts([
           { _id: "rolex-submariner", brand: "ROLEX", name: "Submariner Date", price: 1050000, rating: "4.9", image: rolex, type: "watch" },
           { _id: "omega-seamaster", brand: "OMEGA", name: "Seamaster Diver", price: 525000, rating: "4.8", image: omega, type: "watch" },
-          { _id: "creed-aventus", brand: "CREED", name: "Aventus", price: 31000, rating: "4.9", image: cartier, type: "fragrance" },
+          { _id: "creed-aventus", brand: "CREED", name: "Aventus", price: 31000, rating: "4.9", image: creed, type: "fragrance" },
           { _id: "chanel-chance", brand: "CHANEL", name: "Chance", price: 11500, rating: "4.8", image: chanel, type: "fragrance" }
         ]);
       } finally {
@@ -62,20 +62,28 @@ function FeaturedProducts() {
       <h2>Featured Products</h2>
       <p>Premium picks curated exclusively for you.</p>
 
-      <div className="product-grid">
-        {featuredProducts.map((product) => (
-          <ProductCard
-            key={product._id}
-            _id={product._id}
-            image={product.image}
-            brand={product.brand}
-            name={product.name}
-            price={product.price}
-            rating={product.rating}
-            type={product.type}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+        </div>
+      ) : (
+        <div className="product-grid">
+          {featuredProducts.map((product) => (
+            <ProductCard
+              key={product._id || product.id}
+              _id={product._id || product.id}
+              image={product.image}
+              brand={product.brand}
+              name={product.name}
+              price={product.price}
+              rating={product.rating}
+              type={product.type}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 }

@@ -53,7 +53,7 @@ function Cart() {
                   {/* Details */}
                   <div className="cart-item-details">
                     <p className="cart-item-brand">{item.brand}</p>
-                    <Link to={item._id ? (item.type === "watch" ? `/watches/${item._id}` : `/fragrances/${item._id}`) : (item.type === "watch" ? "/watches" : "/fragrances")} className="text-decoration-none">
+                    <Link to={(item._id || item.id) ? (item.type === "watch" ? `/watches/${item._id || item.id}` : `/fragrances/${item._id || item.id}`) : (item.type === "watch" ? "/watches" : "/fragrances")} className="text-decoration-none">
                       <h4 className="cart-item-name">{item.name}</h4>
                     </Link>
                     

@@ -6,24 +6,6 @@ function Checkout() {
   const { cartItems, total, clearCart } = useCart();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    try {
-      const storedUser = localStorage.getItem("chronoscent_user");
-      if (!storedUser) {
-        navigate("/login", { state: { from: "/checkout" } });
-      } else {
-        const user = JSON.parse(storedUser);
-        setFormData((prev) => ({
-          ...prev,
-          name: user?.name || prev.name || "",
-          email: user?.email || prev.email || ""
-        }));
-      }
-    } catch {
-      navigate("/login", { state: { from: "/checkout" } });
-    }
-  }, [navigate]);
-
   const [formData, setFormData] = useState(() => {
     let savedUser = null;
     try {
@@ -42,6 +24,17 @@ function Checkout() {
       paymentMethod: "Cash on Delivery"
     };
   });
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("chronoscent_user");
+      if (!storedUser) {
+        navigate("/login", { state: { from: "/checkout" } });
+      }
+    } catch {
+      navigate("/login", { state: { from: "/checkout" } });
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -77,9 +70,10 @@ function Checkout() {
       });
 
       if (response.ok) {
+        const data = await response.json().catch(() => null);
         clearCart();
         // Redirect to Virtual Receipt page, passing the order data along
-        navigate("/order-success", { state: { orderData: orderData } });
+        navigate("/order-success", { state: { orderData: data?.order || orderData } });
       } else {
         alert("Failed to place order. Please try again.");
       }

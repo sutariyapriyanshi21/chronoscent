@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { FiSearch, FiX } from "react-icons/fi";
-import watches from "../Data/watches";
+import watches from "../Data/Watches";
 import fragrances from "../Data/fragerence";
 
 import "../css/GlobalSearch.css";

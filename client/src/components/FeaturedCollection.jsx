@@ -32,8 +32,8 @@ function FeaturedCollections() {
               Precision, craftsmanship, and timeless elegance for every moment.
             </p>
 
-            <Link to="/watches" className="btn text-decoration-none p-0 border-0" style={{background: 'none', color: 'inherit'}}>
-              <button>Explore Watches →</button>
+            <Link to="/watches" className="collection-link">
+              Explore Watches →
             </Link>
 
           </div>
@@ -54,8 +54,8 @@ function FeaturedCollections() {
               Signature scents designed to leave an unforgettable impression.
             </p>
 
-            <Link to="/Fragrances" className="btn text-decoration-none p-0 border-0" style={{background: 'none', color: 'inherit'}}>
-              <button>Explore Fragrances →</button>
+            <Link to="/fragrances" className="collection-link">
+              Explore Fragrances →
             </Link>
 
           </div>

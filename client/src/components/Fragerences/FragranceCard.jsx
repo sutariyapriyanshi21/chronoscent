@@ -9,7 +9,7 @@ function FragranceCard({ fragrance, heightClass = "" }) {
   return (
     <article className={`watch-card ${heightClass}`}>
       <div className="watch-card-image">
-        <Link to={`/fragrances/${fragrance._id}`}>
+        <Link to={`/fragrances/${fragrance._id || fragrance.id}`}>
           <img
             src={fragrance.image}
             alt={`${fragrance.brand} ${fragrance.name}`}
@@ -28,12 +28,12 @@ function FragranceCard({ fragrance, heightClass = "" }) {
 
       <div className="watch-card-body mt-2">
         <p className="watch-brand">{fragrance.brand}</p>
-        <Link to={`/fragrances/${fragrance._id}`} className="text-decoration-none">
+        <Link to={`/fragrances/${fragrance._id || fragrance.id}`} className="text-decoration-none">
           <h4 className="watch-name">{fragrance.name}</h4>
         </Link>
         <div className="d-flex justify-content-between align-items-center mt-1">
           <strong className="watch-price">
-            ₹{fragrance.price.toLocaleString("en-IN")}
+            ₹{Number(fragrance.price).toLocaleString("en-IN")}
           </strong>
         </div>
       </div>

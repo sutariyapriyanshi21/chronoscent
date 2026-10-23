@@ -44,7 +44,7 @@ function Footer() {
               </li>
 
               <li>
-                <Link to="/Fragrances">
+                <Link to="/fragrances">
                   Fragrances
                 </Link>
               </li>

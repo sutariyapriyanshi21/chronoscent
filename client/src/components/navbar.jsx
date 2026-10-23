@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 import {
   FiSearch,
@@ -23,7 +23,6 @@ import GlobalSearch from "./GlobalSearch";
 import "../css/navbar.css";
 
 function Navbar() {
-  const location = useLocation();
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -179,34 +178,30 @@ function Navbar() {
               <FiSearch />
             </button>
 
-            <Link to="/wishlist">
-              <button
-                type="button"
-                className="icon-btn position-relative"
-                aria-label="Wishlist"
-              >
-                <FiHeart />
-                {wishlistItems.length > 0 && (
-                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
-                    {wishlistItems.length}
-                  </span>
-                )}
-              </button>
+            <Link 
+              to="/wishlist" 
+              className="icon-btn position-relative text-decoration-none"
+              aria-label="Wishlist"
+            >
+              <FiHeart />
+              {wishlistItems.length > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
+                  {wishlistItems.length}
+                </span>
+              )}
             </Link>
 
-            <Link to="/cart">
-              <button
-                type="button"
-                className="icon-btn position-relative"
-                aria-label="Shopping Cart"
-              >
-                <FiShoppingCart />
-                {totalItems > 0 && (
-                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
-                    {totalItems}
-                  </span>
-                )}
-              </button>
+            <Link 
+              to="/cart" 
+              className="icon-btn position-relative text-decoration-none"
+              aria-label="Shopping Cart"
+            >
+              <FiShoppingCart />
+              {totalItems > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
+                  {totalItems}
+                </span>
+              )}
             </Link>
 
             {currentUser ? (
@@ -488,34 +483,32 @@ function Navbar() {
                 <FiSearch />
               </button>
 
-              <Link to="/wishlist">
-                <button
-                  type="button"
-                  className="icon-btn position-relative"
-                  aria-label="Wishlist"
-                >
-                  <FiHeart />
-                  {wishlistItems.length > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
-                      {wishlistItems.length}
-                    </span>
-                  )}
-                </button>
+              <Link 
+                to="/wishlist" 
+                onClick={closeMenu}
+                className="icon-btn position-relative text-decoration-none"
+                aria-label="Wishlist"
+              >
+                <FiHeart />
+                {wishlistItems.length > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
+                    {wishlistItems.length}
+                  </span>
+                )}
               </Link>
 
-              <Link to="/cart">
-                <button
-                  type="button"
-                  className="icon-btn position-relative"
-                  aria-label="Shopping Cart"
-                >
-                  <FiShoppingCart />
-                  {totalItems > 0 && (
-                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
-                      {totalItems}
-                    </span>
-                  )}
-                </button>
+              <Link 
+                to="/cart" 
+                onClick={closeMenu}
+                className="icon-btn position-relative text-decoration-none"
+                aria-label="Shopping Cart"
+              >
+                <FiShoppingCart />
+                {totalItems > 0 && (
+                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{fontSize: '0.6rem'}}>
+                    {totalItems}
+                  </span>
+                )}
               </Link>
 
               {currentUser ? (
@@ -532,14 +525,13 @@ function Navbar() {
                   <FiLogOut />
                 </button>
               ) : (
-                <Link to="/login" onClick={closeMenu}>
-                  <button
-                    type="button"
-                    className="icon-btn"
-                    aria-label="Account"
-                  >
-                    <FiUser />
-                  </button>
+                <Link 
+                  to="/login" 
+                  onClick={closeMenu}
+                  className="icon-btn text-decoration-none"
+                  aria-label="Account"
+                >
+                  <FiUser />
                 </Link>
               )}
 

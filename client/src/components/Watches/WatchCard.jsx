@@ -9,7 +9,7 @@ function WatchCard({ watch, heightClass = "" }) {
   return (
     <article className={`watch-card ${heightClass}`}>
       <div className="watch-card-image">
-        <Link to={`/watches/${watch._id}`}>
+        <Link to={`/watches/${watch._id || watch.id}`}>
           <img
             src={watch.image}
             alt={`${watch.brand} ${watch.name}`}
@@ -28,12 +28,12 @@ function WatchCard({ watch, heightClass = "" }) {
 
       <div className="watch-card-body mt-2">
         <p className="watch-brand">{watch.brand}</p>
-        <Link to={`/watches/${watch._id}`} className="text-decoration-none">
+        <Link to={`/watches/${watch._id || watch.id}`} className="text-decoration-none">
           <h4 className="watch-name">{watch.name}</h4>
         </Link>
         <div className="d-flex justify-content-between align-items-center mt-1">
           <strong className="watch-price">
-            ₹{watch.price.toLocaleString("en-IN")}
+            ₹{Number(watch.price).toLocaleString("en-IN")}
           </strong>
         </div>
       </div>

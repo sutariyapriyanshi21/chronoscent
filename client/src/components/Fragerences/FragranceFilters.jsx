@@ -1,4 +1,4 @@
-import "../watches/WatchFilters.css";
+import "../Watches/WatchFilters.css";
 
 function FragranceFilters({
   selectedBrands,

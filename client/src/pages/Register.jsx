@@ -60,7 +60,7 @@ function Register() {
       } else {
         setError(data.message || "Failed to register.");
       }
-    } catch (err) {
+    } catch {
       setError("Cannot connect to server. Is the backend running?");
     }
   };

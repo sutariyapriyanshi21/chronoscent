@@ -13,6 +13,7 @@ function WatchDetails() {
   const { wishlistItems, addToWishlist } = useWishlist();
 
   const [watch, setWatch] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`http://127.0.0.1:5000/api/watches/${id}`)
@@ -20,22 +21,41 @@ function WatchDetails() {
         if (!res.ok) throw new Error("Watch not found");
         return res.json();
       })
-      .then((data) => setWatch(data))
+      .then((data) => {
+        setWatch(data);
+        setLoading(false);
+      })
       .catch((err) => {
-        console.error("API error, checking static fallback:", err);
+        console.warn("API error, checking static fallback:", err);
         const fallback = staticWatches.find(
-          (w) => String(w.id) === String(id) || w.name.toLowerCase() === id.toLowerCase()
+          (w) => String(w.id) === String(id) || w._id === id || (w.name && w.name.toLowerCase() === String(id).toLowerCase())
         );
         if (fallback) setWatch(fallback);
+        setLoading(false);
       });
   }, [id]);
 
   const isInWishlist = watch ? wishlistItems.some((item) => item.name === watch.name) : false;
 
   /* ================================
+     LOADING STATE
+  ================================= */
+  if (loading) {
+    return (
+      <section className="watch-details-page py-5">
+        <div className="container text-center py-5">
+          <div className="spinner-border text-light mb-3" role="status" style={{ width: "3rem", height: "3rem" }}>
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="text-secondary tracking-wide">Loading timepiece details...</p>
+        </div>
+      </section>
+    );
+  }
+
+  /* ================================
      PRODUCT NOT FOUND
   ================================= */
-
   if (!watch) {
     return (
       <section className="watch-details-page py-5">

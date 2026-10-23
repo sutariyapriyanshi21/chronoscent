@@ -27,8 +27,9 @@ function ProductCard({
     : String(item.price).replace("$", "₹");
 
   const isInWishlist = wishlistItems.some((w) => w.name === item.name);
-  const detailLink = item._id 
-    ? (item.type === "fragrance" ? `/fragrances/${item._id}` : `/watches/${item._id}`)
+  const itemId = item._id || item.id;
+  const detailLink = itemId 
+    ? (item.type === "fragrance" ? `/fragrances/${itemId}` : `/watches/${itemId}`)
     : (item.type === "fragrance" ? "/fragrances" : "/watches");
 
   return (
