@@ -9,6 +9,7 @@ const Order = require('./models/Order');
 const User = require('./models/User'); // Added User model for authentication
 const Brand = require('./models/Brand'); // Dynamic Brand House model
 const Category = require('./models/Category'); // Dynamic Category Tier model
+const Message = require('./models/Message'); // Contact & Concierge messages
 
 const app = express();
 
@@ -207,6 +208,73 @@ app.get('/api/orders', async (req, res) => {
     }
 });
 
+// Get orders for a specific user (Customer "My Orders")
+app.get('/api/orders/user/:email', async (req, res) => {
+    try {
+        const userEmail = req.params.email;
+        if (!userEmail) {
+            return res.status(400).json({ message: "Email parameter is required" });
+        }
+        const orders = await Order.find({
+            "customerInfo.email": { $regex: new RegExp(`^${userEmail.trim()}$`, 'i') }
+        }).sort({ orderDate: -1 });
+        
+        res.json(orders);
+    } catch (error) {
+        console.error("Error fetching user orders:", error);
+        res.status(500).json({ message: "Error fetching user orders", error });
+    }
+});
+
+// Customer: Cancel an order (Allowed only if status is Processing)
+app.put('/api/orders/:id/cancel', async (req, res) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        if (order.status !== "Processing") {
+            return res.status(400).json({ message: `Cannot cancel order that is already ${order.status}` });
+        }
+        order.status = "Cancelled";
+        await order.save();
+        res.json({ message: "Order cancelled successfully", order });
+    } catch (error) {
+        res.status(500).json({ message: "Error cancelling order", error });
+    }
+});
+
+// Customer: Submit or edit product review & star rating for a delivered item
+app.put('/api/orders/:orderId/review', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { itemIndex, rating, review } = req.body;
+
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        if (order.status !== "Delivered") {
+            return res.status(400).json({ message: "Reviews can only be submitted for delivered orders." });
+        }
+
+        if (!order.orderItems[itemIndex]) {
+            return res.status(404).json({ message: "Item not found in order" });
+        }
+
+        order.orderItems[itemIndex].rating = Number(rating) || 5;
+        order.orderItems[itemIndex].review = review ? review.trim() : "";
+        order.orderItems[itemIndex].reviewedAt = new Date();
+
+        await order.save();
+        res.json({ message: "Thank you! Your rating and review have been saved.", order });
+    } catch (error) {
+        console.error("Error submitting review:", error);
+        res.status(500).json({ message: "Failed to submit review", error });
+    }
+});
+
 // Admin: Update order status (Processing, Shipped, Delivered, Cancelled)
 app.put('/api/orders/:id/status', async (req, res) => {
     try {
@@ -230,6 +298,51 @@ app.delete('/api/orders/:id', async (req, res) => {
         res.json({ message: "Order deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting order", error });
+    }
+});
+
+// ==========================================
+// CONTACT & CONCIERGE MESSAGES
+// ==========================================
+
+// Create a new message (From Contact Page)
+app.post('/api/messages', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+        if (!name || !email || !message) {
+            return res.status(400).json({ message: "Name, email, and message are required." });
+        }
+        const newMessage = new Message({
+            name,
+            email,
+            subject: subject || "Customer Inquiry",
+            message
+        });
+        await newMessage.save();
+        res.status(201).json({ message: "Message sent successfully!", data: newMessage });
+    } catch (error) {
+        console.error("Error saving message:", error);
+        res.status(500).json({ message: "Failed to send message", error });
+    }
+});
+
+// Admin: Get all contact messages
+app.get('/api/messages', async (req, res) => {
+    try {
+        const messages = await Message.find().sort({ createdAt: -1 });
+        res.json(messages);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching messages", error });
+    }
+});
+
+// Admin: Delete a contact message
+app.delete('/api/messages/:id', async (req, res) => {
+    try {
+        await Message.findByIdAndDelete(req.params.id);
+        res.json({ message: "Message deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ message: "Error deleting message", error });
     }
 });
 

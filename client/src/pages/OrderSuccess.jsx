@@ -58,8 +58,11 @@ function OrderSuccess() {
           </div>
 
           {/* Buttons wrapped in a container that will be hidden when printing */}
-          <div className="d-flex justify-content-between d-print-none">
+          <div className="d-flex flex-wrap gap-2 justify-content-between d-print-none">
             <Link to="/" className="btn btn-outline-dark">Back to Home</Link>
+            <Link to="/my-orders" className="btn btn-primary" style={{ backgroundColor: "#0f4c81", borderColor: "#0f4c81" }}>
+              Track in My Orders
+            </Link>
             <button onClick={handleDownload} className="btn btn-dark">Download Receipt</button>
           </div>
           

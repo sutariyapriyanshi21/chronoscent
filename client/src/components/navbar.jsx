@@ -245,6 +245,20 @@ function Navbar() {
                       </small>
                     </div>
 
+                    <hr className="my-2" />
+                    <div className="admin-menu-list">
+                      <Link
+                        to="/my-orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="admin-menu-item"
+                        style={{ color: '#0f4c81', fontWeight: 600 }}
+                      >
+                        <FiPackage size={15} className="text-primary" />
+                        <span>My Orders</span>
+                        <FiChevronRight size={12} className="ms-auto text-muted" />
+                      </Link>
+                    </div>
+
                     {isAdmin && (
                       <>
                         <hr className="my-2" />
@@ -403,6 +417,24 @@ function Navbar() {
               >
                 Contact
               </NavLink>
+
+              {currentUser && (
+                <NavLink
+                  to="/my-orders"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `mobile-nav-link d-flex align-items-center justify-content-between ${
+                      isActive ? "active-mobile-link" : ""
+                    }`
+                  }
+                  style={{ color: '#0f4c81', fontWeight: 600 }}
+                >
+                  <span className="d-flex align-items-center gap-2">
+                    <FiPackage size={16} /> My Orders
+                  </span>
+                  <FiChevronRight size={14} className="text-muted" />
+                </NavLink>
+              )}
 
             </div>
 

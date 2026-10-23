@@ -26,8 +26,10 @@ import {
   FiAlertCircle,
   FiSlash,
   FiCheck,
-  FiRefreshCw
+  FiRefreshCw,
+  FiMail
 } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 import "../css/Admin.css";
 
 function Admin() {
@@ -68,6 +70,7 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [dbBrands, setDbBrands] = useState([]);
   const [dbCategories, setDbCategories] = useState([]);
+  const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Brand Houses Tab Filter
@@ -119,17 +122,42 @@ function Admin() {
     inStock: true
   });
 
+  // Extract all customer reviews from orders (delivering true customer voice)
+  const customerReviews = useMemo(() => {
+    const list = [];
+    orders.forEach((order) => {
+      order.orderItems?.forEach((item, itemIdx) => {
+        if (item.rating && item.rating > 0) {
+          list.push({
+            orderId: order._id,
+            itemIndex: itemIdx,
+            customerName: order.customerInfo?.name || "Verified Client",
+            customerEmail: order.customerInfo?.email || "Unknown",
+            customerCity: order.customerInfo?.city || "",
+            productName: item.name,
+            productImage: item.image,
+            rating: item.rating,
+            review: item.review,
+            reviewedAt: item.reviewedAt || order.orderDate
+          });
+        }
+      });
+    });
+    return list;
+  }, [orders]);
+
   // Fetch all live data from backend
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [ordersRes, watchesRes, fragrancesRes, usersRes, brandsRes, categoriesRes] = await Promise.all([
+      const [ordersRes, watchesRes, fragrancesRes, usersRes, brandsRes, categoriesRes, messagesRes] = await Promise.all([
         fetch("http://127.0.0.1:5000/api/orders").catch(() => null),
         fetch("http://127.0.0.1:5000/api/watches").catch(() => null),
         fetch("http://127.0.0.1:5000/api/fragrances").catch(() => null),
         fetch("http://127.0.0.1:5000/api/users").catch(() => null),
         fetch("http://127.0.0.1:5000/api/brands").catch(() => null),
-        fetch("http://127.0.0.1:5000/api/categories").catch(() => null)
+        fetch("http://127.0.0.1:5000/api/categories").catch(() => null),
+        fetch("http://127.0.0.1:5000/api/messages").catch(() => null)
       ]);
 
       if (ordersRes && ordersRes.ok) setOrders(await ordersRes.json());
@@ -138,10 +166,29 @@ function Admin() {
       if (usersRes && usersRes.ok) setUsers(await usersRes.json());
       if (brandsRes && brandsRes.ok) setDbBrands(await brandsRes.json());
       if (categoriesRes && categoriesRes.ok) setDbCategories(await categoriesRes.json());
+      if (messagesRes && messagesRes.ok) setMessages(await messagesRes.json());
     } catch (err) {
       console.error("Error loading admin data:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Delete message handler
+  const handleDeleteMessage = async (messageId) => {
+    if (!window.confirm("Are you sure you want to delete this message?")) return;
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/messages/${messageId}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        setMessages((prev) => prev.filter((m) => m._id !== messageId));
+      } else {
+        alert("Failed to delete message.");
+      }
+    } catch (err) {
+      console.error("Error deleting message:", err);
+      alert("Error deleting message.");
     }
   };
 
@@ -154,7 +201,7 @@ function Admin() {
   // Sync active tab with URL query param ?tab=... (e.g. /admin?tab=products)
   useEffect(() => {
     const tabParam = searchParams.get("tab") || location.state?.tab;
-    const validTabs = ["orders", "customers", "products", "brands", "categories", "reviews", "settings", "security"];
+    const validTabs = ["orders", "customers", "messages", "products", "brands", "categories", "reviews", "settings", "security"];
     if (tabParam && validTabs.includes(tabParam.toLowerCase())) {
       setActiveTab(tabParam.toLowerCase());
     }
@@ -820,6 +867,15 @@ function Admin() {
             <span className="admin-nav-badge">{totalUsers}</span>
           </button>
 
+          <button
+            className={`admin-nav-item ${activeTab === "messages" ? "active" : ""}`}
+            onClick={() => { setActiveTab("messages"); setIsSidebarOpenMobile(false); }}
+          >
+            <FiMail className="admin-nav-icon" />
+            <span>Messages</span>
+            <span className="admin-nav-badge">{messages.length}</span>
+          </button>
+
           <div className="admin-nav-group-label mt-3">CATALOG</div>
           <button
             className={`admin-nav-item ${activeTab === "products" ? "active" : ""}`}
@@ -853,7 +909,8 @@ function Admin() {
             onClick={() => { setActiveTab("reviews"); setIsSidebarOpenMobile(false); }}
           >
             <FiStar className="admin-nav-icon" />
-            <span>Review</span>
+            <span>Reviews</span>
+            <span className="admin-nav-badge">{customerReviews.length}</span>
           </button>
 
           <div className="admin-nav-group-label mt-3">PREFERENCES</div>
@@ -1815,36 +1872,170 @@ function Admin() {
           )}
 
           {/* ========================================================
-              VIEW 6: REVIEWS
+              VIEW 6: REAL CUSTOMER REVIEWS
              ======================================================== */}
           {activeTab === "reviews" && (
             <div className="admin-panel-card">
-              <div className="admin-panel-header">
-                <h6 className="admin-panel-title mb-0">Customer Ratings & Reviews</h6>
-                <small className="text-muted">High-rated client favorites</small>
+              <div className="admin-panel-header d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="admin-panel-title mb-0">Customer Ratings & Reviews</h6>
+                  <small className="text-muted">Verified client feedback on delivered orders ({customerReviews.length} reviews)</small>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={fetchAllData}
+                >
+                  <FiRefreshCw size={13} className="me-1" /> Refresh
+                </button>
               </div>
+
               <div className="p-4">
-                <div className="row g-3">
-                  {combinedProducts
-                    .filter((p) => p.rating >= 4.8)
-                    .slice(0, 8)
-                    .map((item) => (
-                      <div key={item._id} className="col-12 col-md-6">
-                        <div className="d-flex align-items-center gap-3 p-3 border rounded bg-white">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            style={{ width: "50px", height: "50px", objectFit: "contain" }}
-                          />
-                          <div>
-                            <div className="fw-bold text-ocean">{item.name}</div>
-                            <small className="text-muted">{item.brand} • ★ {item.rating || 4.8} / 5.0</small>
-                            <div className="text-success small fw-semibold">★★★★★ Verified Customer Rating</div>
+                {customerReviews.length === 0 ? (
+                  <div className="text-center py-5">
+                    <FiStar size={40} className="text-muted mb-2" />
+                    <h6 className="fw-bold text-dark">No Customer Reviews Yet</h6>
+                    <p className="text-muted small mb-0">
+                      When customers receive their delivered orders and submit ratings & reviews in "My Orders", they will immediately appear here!
+                    </p>
+                  </div>
+                ) : (
+                  <div className="row g-3">
+                    {customerReviews.map((rev, i) => (
+                      <div key={i} className="col-12 col-lg-6">
+                        <div className="p-3 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column">
+                          <div className="d-flex align-items-start gap-3 mb-2">
+                            <img
+                              src={rev.productImage || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100"}
+                              alt={rev.productName}
+                              style={{ width: "55px", height: "55px", objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100";
+                              }}
+                            />
+                            <div className="flex-grow-1">
+                              <div className="fw-bold text-dark">{rev.productName}</div>
+                              <div className="d-flex align-items-center gap-1 mt-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <FaStar
+                                    key={star}
+                                    size={13}
+                                    color={star <= rev.rating ? "#f59e0b" : "#cbd5e1"}
+                                  />
+                                ))}
+                                <span className="ms-1 fw-bold text-dark small">
+                                  ★ {rev.rating} / 5.0
+                                </span>
+                              </div>
+                            </div>
+                            <span className="badge bg-light text-muted border" style={{ fontSize: "0.7rem" }}>
+                              #ORD-{rev.orderId.slice(-6).toUpperCase()}
+                            </span>
+                          </div>
+
+                          {rev.review ? (
+                            <div className="p-2 bg-light rounded text-dark small fst-italic my-2 flex-grow-1">
+                              "{rev.review}"
+                            </div>
+                          ) : (
+                            <div className="text-muted small fst-italic my-2 flex-grow-1">
+                              No written comment provided.
+                            </div>
+                          )}
+
+                          <div className="border-top pt-2 mt-auto d-flex justify-content-between align-items-center text-muted" style={{ fontSize: "0.78rem" }}>
+                            <span>
+                              By: <strong>{rev.customerName}</strong> ({rev.customerEmail})
+                            </span>
+                            <span>
+                              {new Date(rev.reviewedAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric"
+                              })}
+                            </span>
                           </div>
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ========================================================
+              VIEW: CONTACT MESSAGES / CONCIERGE INQUIRIES
+             ======================================================== */}
+          {activeTab === "messages" && (
+            <div className="admin-panel-card">
+              <div className="admin-panel-header d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 className="admin-panel-title mb-0">Client Concierge Inquiries</h6>
+                  <small className="text-muted">Direct messages submitted from the contact portal ({messages.length} total)</small>
                 </div>
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-primary"
+                  onClick={fetchAllData}
+                >
+                  <FiRefreshCw size={13} className="me-1" /> Refresh Messages
+                </button>
+              </div>
+
+              <div className="p-4">
+                {messages.length === 0 ? (
+                  <div className="text-center py-5">
+                    <FiMail size={40} className="text-muted mb-2" />
+                    <h6 className="fw-bold text-dark">No Client Inquiries Yet</h6>
+                    <p className="text-muted small mb-0">When visitors send messages via the Contact page, they will show up here.</p>
+                  </div>
+                ) : (
+                  <div className="d-flex flex-column gap-3">
+                    {messages.map((msg) => (
+                      <div key={msg._id} className="p-3 border rounded-3 bg-white shadow-sm">
+                        <div className="d-flex flex-wrap justify-content-between align-items-center border-bottom pb-2 mb-2 gap-2">
+                          <div>
+                            <strong className="text-dark me-2">{msg.name}</strong>
+                            <a href={`mailto:${msg.email}`} className="text-primary small text-decoration-none">
+                              &lt;{msg.email}&gt;
+                            </a>
+                          </div>
+                          <div className="d-flex align-items-center gap-3">
+                            <small className="text-muted">
+                              {new Date(msg.createdAt).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit"
+                              })}
+                            </small>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1"
+                              style={{ fontSize: "0.75rem", padding: "3px 8px" }}
+                              onClick={() => handleDeleteMessage(msg._id)}
+                              title="Delete inquiry"
+                            >
+                              <FiTrash2 size={12} /> Delete
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="mb-1">
+                          <span className="badge bg-light text-dark border me-2">Subject</span>
+                          <strong className="text-dark small">{msg.subject}</strong>
+                        </div>
+
+                        <div className="text-muted small p-2 bg-light rounded mt-2" style={{ whiteSpace: "pre-wrap" }}>
+                          {msg.message}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

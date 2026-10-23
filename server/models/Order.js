@@ -4,7 +4,10 @@ const orderItemSchema = new mongoose.Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
-    image: { type: String }
+    image: { type: String },
+    rating: { type: Number, default: 0 },
+    review: { type: String, default: "" },
+    reviewedAt: { type: Date }
 });
 
 const orderSchema = new mongoose.Schema({
