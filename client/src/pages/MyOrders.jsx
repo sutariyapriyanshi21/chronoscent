@@ -504,10 +504,10 @@ function MyOrders() {
                         {/* Step 2: Processing */}
                         <div
                           className={`tracker-step ${currentStatus === "Processing"
-                              ? "current"
-                              : ["Shipped", "Delivered"].includes(currentStatus)
-                                ? "completed"
-                                : ""
+                            ? "current"
+                            : ["Shipped", "Delivered"].includes(currentStatus)
+                              ? "completed"
+                              : ""
                             }`}
                         >
                           <div className="tracker-node">
@@ -519,10 +519,10 @@ function MyOrders() {
                         {/* Step 3: Shipped */}
                         <div
                           className={`tracker-step ${currentStatus === "Shipped"
-                              ? "current"
-                              : currentStatus === "Delivered"
-                                ? "completed"
-                                : ""
+                            ? "current"
+                            : currentStatus === "Delivered"
+                              ? "completed"
+                              : ""
                             }`}
                         >
                           <div className="tracker-node">
