@@ -27,18 +27,31 @@ function FeaturedProducts() {
         const watches = await watchesRes.json();
         const fragrances = await fragrancesRes.json();
 
+        const defaultShowcase = [
+          { _id: "rolex-submariner", brand: "ROLEX", name: "Submariner Date", price: 1050000, rating: "4.9", image: rolex, type: "watch" },
+          { _id: "omega-seamaster", brand: "OMEGA", name: "Seamaster Diver", price: 525000, rating: "4.8", image: omega, type: "watch" },
+          { _id: "creed-aventus", brand: "CREED", name: "Aventus", price: 31000, rating: "4.9", image: creed, type: "fragrance" },
+          { _id: "chanel-chance", brand: "CHANEL", name: "Chance", price: 11500, rating: "4.8", image: chanel, type: "fragrance" }
+        ];
+
+        // If database is empty or has no items yet, use default showcase
+        if (!Array.isArray(watches) || watches.length === 0 || !Array.isArray(fragrances) || fragrances.length === 0) {
+          setFeaturedProducts(defaultShowcase);
+          return;
+        }
+
         // Dynamically select 4 flagship luxury items (2 Watches & 2 Fragrances)
         const rolexWatch = watches.find(w => w.brand?.toLowerCase() === "rolex") || watches[0];
-        const omegaWatch = watches.find(w => w.brand?.toLowerCase() === "omega") || watches[1];
+        const omegaWatch = watches.find(w => w.brand?.toLowerCase() === "omega") || watches[1] || watches[0];
         const creedFragrance = fragrances.find(f => f.brand?.toLowerCase() === "creed") || fragrances[0];
-        const chanelFragrance = fragrances.find(f => f.brand?.toLowerCase() === "chanel") || fragrances[1];
+        const chanelFragrance = fragrances.find(f => f.brand?.toLowerCase() === "chanel") || fragrances[1] || fragrances[0];
 
         const products = [
-          { ...rolexWatch, type: "watch" },
-          { ...omegaWatch, type: "watch" },
-          { ...creedFragrance, type: "fragrance" },
-          { ...chanelFragrance, type: "fragrance" }
-        ].filter(Boolean);
+          rolexWatch ? { ...rolexWatch, type: "watch" } : defaultShowcase[0],
+          omegaWatch ? { ...omegaWatch, type: "watch" } : defaultShowcase[1],
+          creedFragrance ? { ...creedFragrance, type: "fragrance" } : defaultShowcase[2],
+          chanelFragrance ? { ...chanelFragrance, type: "fragrance" } : defaultShowcase[3]
+        ];
 
         setFeaturedProducts(products);
       } catch (err) {
