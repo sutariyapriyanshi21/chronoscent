@@ -6,7 +6,7 @@ import FragranceCard from "../components/Fragerences/FragranceCard";
 import Footer from "../components/Footer";
 import staticFragrances from "../Data/fragerence";
 
-import "../css/watches.css"; // Note: reuse same css
+import "../css/Watches.css"; // Note: reuse same css
 
 function Fragrances() {
   const [fragrances, setFragrances] = useState([]); // <-- State to hold fragrances from database

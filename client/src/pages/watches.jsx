@@ -6,7 +6,7 @@ import WatchCard from "../components/Watches/WatchCard";
 import Footer from "../components/Footer";
 import staticWatches from "../Data/Watches";
 
-import "../css/watches.css";
+import "../css/Watches.css";
 
 function Watches() {
   const [watches, setWatches] = useState([]); // <-- State to hold watches from database
