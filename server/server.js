@@ -11,10 +11,17 @@ const Brand = require('./models/Brand'); // Dynamic Brand House model
 const Category = require('./models/Category'); // Dynamic Category Tier model
 const Message = require('./models/Message'); // Contact & Concierge messages
 
+const path = require('path');
+const fs = require('fs');
+
 const app = express();
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '30mb' }));
+app.use(express.urlencoded({ limit: '30mb', extended: true }));
+
+// Serve public static assets
+app.use('/assests', express.static(path.join(__dirname, '../client/public/assests')));
 
 // Auto-seed baseline brands & categories if empty
 const seedBaselineBrandsAndCategories = async () => {
@@ -152,21 +159,29 @@ app.get('/api/watches/:id', async (req, res) => {
 // Admin: Create a new watch
 app.post('/api/watches', async (req, res) => {
     try {
-        const newWatch = new Watch(req.body);
+        const watchData = { ...req.body };
+        if (!watchData._id || watchData._id === '') {
+            delete watchData._id;
+        }
+        const newWatch = new Watch(watchData);
         await newWatch.save();
         res.status(201).json(newWatch);
     } catch (error) {
-        res.status(500).json({ message: "Error creating watch", error });
+        console.error("Error creating watch:", error);
+        res.status(500).json({ message: error.message || "Error creating watch", error });
     }
 });
 
 // Admin: Update a watch
 app.put('/api/watches/:id', async (req, res) => {
     try {
-        const updatedWatch = await Watch.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateData = { ...req.body };
+        delete updateData._id;
+        const updatedWatch = await Watch.findByIdAndUpdate(req.params.id, updateData, { new: true });
         res.json(updatedWatch);
     } catch (error) {
-        res.status(500).json({ message: "Error updating watch", error });
+        console.error("Error updating watch:", error);
+        res.status(500).json({ message: error.message || "Error updating watch", error });
     }
 });
 
@@ -209,21 +224,29 @@ app.get('/api/fragrances/:id', async (req, res) => {
 // Admin: Create a new fragrance
 app.post('/api/fragrances', async (req, res) => {
     try {
-        const newFragrance = new Fragrance(req.body);
+        const fragranceData = { ...req.body };
+        if (!fragranceData._id || fragranceData._id === '') {
+            delete fragranceData._id;
+        }
+        const newFragrance = new Fragrance(fragranceData);
         await newFragrance.save();
         res.status(201).json(newFragrance);
     } catch (error) {
-        res.status(500).json({ message: "Error creating fragrance", error });
+        console.error("Error creating fragrance:", error);
+        res.status(500).json({ message: error.message || "Error creating fragrance", error });
     }
 });
 
 // Admin: Update a fragrance
 app.put('/api/fragrances/:id', async (req, res) => {
     try {
-        const updatedFragrance = await Fragrance.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updateData = { ...req.body };
+        delete updateData._id;
+        const updatedFragrance = await Fragrance.findByIdAndUpdate(req.params.id, updateData, { new: true });
         res.json(updatedFragrance);
     } catch (error) {
-        res.status(500).json({ message: "Error updating fragrance", error });
+        console.error("Error updating fragrance:", error);
+        res.status(500).json({ message: error.message || "Error updating fragrance", error });
     }
 });
 
@@ -653,6 +676,54 @@ app.put('/api/users/:id/status', async (req, res) => {
     }
 });
 
+// Admin: Add a new User / Customer
+app.post('/api/users', async (req, res) => {
+    try {
+        const { name, email, password, role, status } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: "Name, email, and password are required" });
+        }
+        const existing = await User.findOne({ email: email.toLowerCase().trim() });
+        if (existing) {
+            return res.status(400).json({ message: "A user with this email address already exists" });
+        }
+        const newUser = new User({
+            name: name.trim(),
+            email: email.toLowerCase().trim(),
+            password: password.trim(),
+            role: role || "user",
+            status: status || "active"
+        });
+        await newUser.save();
+        res.status(201).json({ message: "User created successfully", user: newUser });
+    } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(500).json({ message: error.message || "Error creating user", error });
+    }
+});
+
+// Admin: Update User details
+app.put('/api/users/:id', async (req, res) => {
+    try {
+        const { name, email, role, status, password } = req.body;
+        const updateObj = {};
+        if (name) updateObj.name = name.trim();
+        if (email) updateObj.email = email.toLowerCase().trim();
+        if (role) updateObj.role = role;
+        if (status) updateObj.status = status;
+        if (password && password.trim()) updateObj.password = password.trim();
+
+        const updated = await User.findByIdAndUpdate(req.params.id, updateObj, { new: true }).select("-password");
+        if (!updated) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json({ message: "User updated successfully", user: updated });
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({ message: error.message || "Error updating user", error });
+    }
+});
+
 // Admin: Delete a User
 app.delete('/api/users/:id', async (req, res) => {
     try {
@@ -660,6 +731,103 @@ app.delete('/api/users/:id', async (req, res) => {
         res.json({ message: "User deleted successfully" });
     } catch (error) {
         res.status(500).json({ message: "Error deleting user", error });
+    }
+});
+
+// Admin: Delete / Moderate a Customer Review from an Order
+app.delete('/api/orders/:orderId/review/:itemIndex', async (req, res) => {
+    try {
+        const { orderId, itemIndex } = req.params;
+        const order = await Order.findById(orderId);
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+        const idx = parseInt(itemIndex, 10);
+        if (order.orderItems && order.orderItems[idx]) {
+            order.orderItems[idx].rating = 0;
+            order.orderItems[idx].review = "";
+            order.orderItems[idx].reviewedAt = null;
+            await order.save();
+            return res.json({ message: "Review removed successfully", order });
+        }
+        res.status(404).json({ message: "Order item not found" });
+    } catch (error) {
+        console.error("Error deleting review:", error);
+        res.status(500).json({ message: "Error deleting review", error });
+    }
+});
+
+// Admin: Upload an image file directly
+app.post('/api/upload', (req, res) => {
+    try {
+        const { image, filename, folder } = req.body;
+        if (!image) {
+            return res.status(400).json({ message: "No image data provided" });
+        }
+
+        const matches = image.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+        let ext = 'jpg';
+        let buffer;
+        if (matches && matches.length === 3) {
+            const mime = matches[1];
+            if (mime.includes('png')) ext = 'png';
+            else if (mime.includes('webp')) ext = 'webp';
+            buffer = Buffer.from(matches[2], 'base64');
+        } else {
+            buffer = Buffer.from(image, 'base64');
+        }
+
+        const safeFolder = (folder === 'fragrance' || folder === 'fragrances' || folder === 'Fregerances') ? 'Fregerances' : 'Watches';
+        const rawName = filename ? filename.replace(/[^a-zA-Z0-9._-]/g, '_') : `upload_${Date.now()}.${ext}`;
+        const finalName = rawName.includes('.') ? rawName : `${rawName}.${ext}`;
+        
+        const targetDir = path.join(__dirname, '../client/public/assests/Products', safeFolder);
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir, { recursive: true });
+        }
+
+        const filePath = path.join(targetDir, finalName);
+        fs.writeFileSync(filePath, buffer);
+
+        const publicUrl = `/assests/Products/${safeFolder}/${finalName}`;
+        res.status(201).json({ message: "Image uploaded successfully", url: publicUrl });
+    } catch (error) {
+        console.error("Error uploading image:", error);
+        res.status(500).json({ message: "Failed to upload image", error: error.message });
+    }
+});
+
+// Get all existing catalog images available on disk
+app.get('/api/catalog-images', (req, res) => {
+    try {
+        const type = req.query.type || 'all';
+        const baseDir = path.join(__dirname, '../client/public/assests/Products');
+        const results = [];
+
+        const readFolder = (folderName, categoryType) => {
+            const folderPath = path.join(baseDir, folderName);
+            if (fs.existsSync(folderPath)) {
+                const files = fs.readdirSync(folderPath);
+                files.forEach(f => {
+                    const ext = path.extname(f).toLowerCase();
+                    if (['.jpg', '.jpeg', '.png', '.webp'].includes(ext)) {
+                        results.push({
+                            name: f,
+                            path: `/assests/Products/${folderName}/${f}`,
+                            categoryType
+                        });
+                    }
+                });
+            }
+        };
+
+        if (type === 'watches' || type === 'all') readFolder('Watches', 'watch');
+        if (type === 'fragrances' || type === 'all') readFolder('Fregerances', 'fragrance');
+
+        res.json(results);
+    } catch (error) {
+        console.error("Error reading catalog images:", error);
+        res.status(500).json({ message: "Error reading catalog images", error: error.message });
     }
 });
 

@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from "react"; // <-- Added useEffect
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import WatchSearch from "../components/Watches/WatchSearch";
 import WatchFilters from "../components/Watches/WatchFilters";
@@ -9,6 +10,7 @@ import staticWatches from "../Data/Watches";
 import "../css/Watches.css";
 
 function Watches() {
+  const [searchParams] = useSearchParams();
   const [watches, setWatches] = useState([]); // <-- State to hold watches from database
 
   const [dbBrands, setDbBrands] = useState([]);
@@ -53,6 +55,15 @@ function Watches() {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
+
+  // Sync brand from URL query params (e.g. /watches?brand=Casio)
+  useEffect(() => {
+    const brandParam = searchParams.get("brand");
+    if (brandParam) {
+      setSelectedBrands([brandParam]);
+      window.scrollTo({ top: 350, behavior: "smooth" });
+    }
+  }, [searchParams]);
 
   /* ================================
      SEARCH & SORT STATES

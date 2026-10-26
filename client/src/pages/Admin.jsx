@@ -22,7 +22,13 @@ import {
   FiSlash,
   FiCheck,
   FiRefreshCw,
-  FiMail
+  FiMail,
+  FiUpload,
+  FiImage,
+  FiEye,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiUserPlus
 } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import "../css/Admin.css";
@@ -111,6 +117,24 @@ function Admin() {
     inStock: true
   });
 
+  // Image Upload & Gallery Picker States
+  const [catalogImages, setCatalogImages] = useState([]);
+  const [showGalleryModal, setShowGalleryModal] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageTestStatus, setImageTestStatus] = useState("idle");
+
+  // User Add / Edit Modal States
+  const [showUserModal, setShowUserModal] = useState(false);
+  const [isEditingUser, setIsEditingUser] = useState(false);
+  const [userForm, setUserForm] = useState({
+    _id: "",
+    name: "",
+    email: "",
+    password: "",
+    role: "user",
+    status: "active"
+  });
+
   // Extract all customer reviews from orders (delivering true customer voice)
   const customerReviews = useMemo(() => {
     const list = [];
@@ -139,14 +163,15 @@ function Admin() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [ordersRes, watchesRes, fragrancesRes, usersRes, brandsRes, categoriesRes, messagesRes] = await Promise.all([
+      const [ordersRes, watchesRes, fragrancesRes, usersRes, brandsRes, categoriesRes, messagesRes, imagesRes] = await Promise.all([
         fetch("http://127.0.0.1:5000/api/orders").catch(() => null),
         fetch("http://127.0.0.1:5000/api/watches").catch(() => null),
         fetch("http://127.0.0.1:5000/api/fragrances").catch(() => null),
         fetch("http://127.0.0.1:5000/api/users").catch(() => null),
         fetch("http://127.0.0.1:5000/api/brands").catch(() => null),
         fetch("http://127.0.0.1:5000/api/categories").catch(() => null),
-        fetch("http://127.0.0.1:5000/api/messages").catch(() => null)
+        fetch("http://127.0.0.1:5000/api/messages").catch(() => null),
+        fetch("http://127.0.0.1:5000/api/catalog-images").catch(() => null)
       ]);
 
       if (ordersRes && ordersRes.ok) setOrders(await ordersRes.json());
@@ -156,6 +181,7 @@ function Admin() {
       if (brandsRes && brandsRes.ok) setDbBrands(await brandsRes.json());
       if (categoriesRes && categoriesRes.ok) setDbCategories(await categoriesRes.json());
       if (messagesRes && messagesRes.ok) setMessages(await messagesRes.json());
+      if (imagesRes && imagesRes.ok) setCatalogImages(await imagesRes.json());
     } catch (err) {
       console.error("Error loading admin data:", err);
     } finally {
@@ -301,6 +327,84 @@ function Admin() {
     }
   };
 
+  const openAddUserModal = () => {
+    setUserForm({
+      _id: "",
+      name: "",
+      email: "",
+      password: "",
+      role: "user",
+      status: "active"
+    });
+    setIsEditingUser(false);
+    setShowUserModal(true);
+  };
+
+  const openEditUserModal = (u) => {
+    setUserForm({
+      _id: u._id,
+      name: u.name || "",
+      email: u.email || "",
+      password: "",
+      role: u.role || "user",
+      status: u.status || "active"
+    });
+    setIsEditingUser(true);
+    setShowUserModal(true);
+  };
+
+  const handleSaveUser = async (e) => {
+    e.preventDefault();
+    if (!userForm.name || !userForm.email) return;
+
+    try {
+      const isEdit = Boolean(userForm._id);
+      const url = isEdit
+        ? `http://127.0.0.1:5000/api/users/${userForm._id}`
+        : "http://127.0.0.1:5000/api/users";
+      const method = isEdit ? "PUT" : "POST";
+
+      const payload = { ...userForm };
+      if (!isEdit) delete payload._id;
+      if (isEdit && !payload.password) delete payload.password;
+
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(isEdit ? "Customer account updated!" : "New customer account created successfully!");
+        setShowUserModal(false);
+        fetchAllData();
+      } else {
+        alert(data.message || "Failed to save user account.");
+      }
+    } catch (err) {
+      console.error("Error saving user:", err);
+      alert("Error saving user.");
+    }
+  };
+
+  const handleDeleteReview = async (orderId, itemIndex) => {
+    if (!window.confirm("Are you sure you want to remove this customer review?")) return;
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/orders/${orderId}/review/${itemIndex}`, {
+        method: "DELETE"
+      });
+      if (res.ok) {
+        alert("Review removed successfully.");
+        fetchAllData();
+      } else {
+        alert("Failed to delete review.");
+      }
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      alert("Error deleting review.");
+    }
+  };
+
   // ========================================================
   // 3. PRODUCT CRUD ACTIONS
   // ========================================================
@@ -352,6 +456,72 @@ function Admin() {
     });
     setIsEditing(false);
     setShowProductForm(false);
+    setImageTestStatus("idle");
+  };
+
+  const handleImageFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const base64Data = reader.result;
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/upload", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: base64Data,
+            filename: file.name,
+            folder: formType === "watch" ? "Watches" : "Fregerances"
+          })
+        });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          setProductForm(prev => ({ ...prev, image: data.url }));
+          setImageTestStatus("loaded");
+          fetchAllData();
+        } else {
+          setProductForm(prev => ({ ...prev, image: base64Data }));
+          setImageTestStatus("loaded");
+        }
+      } catch {
+        setProductForm(prev => ({ ...prev, image: base64Data }));
+        setImageTestStatus("loaded");
+      } finally {
+        setIsUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleQuickToggleStock = async (product) => {
+    const isWatch = product.productCategory === "watch" || product.watchType !== undefined;
+    const endpoint = isWatch ? "watches" : "fragrances";
+    const nextStock = product.inStock === false ? true : false;
+
+    // Optimistic update
+    if (isWatch) {
+      setWatches(prev => prev.map(w => w._id === product._id ? { ...w, inStock: nextStock } : w));
+    } else {
+      setFragrances(prev => prev.map(f => f._id === product._id ? { ...f, inStock: nextStock } : f));
+    }
+
+    try {
+      const res = await fetch(`http://127.0.0.1:5000/api/${endpoint}/${product._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inStock: nextStock })
+      });
+      if (!res.ok) {
+        fetchAllData();
+        alert("Failed to update stock status.");
+      }
+    } catch (err) {
+      console.error("Error updating stock status:", err);
+      fetchAllData();
+    }
   };
 
   const handleProductSubmit = async (e) => {
@@ -368,6 +538,16 @@ function Admin() {
         rating: Number(productForm.rating || 4.8)
       };
 
+      if (!isEditing || !payload._id) {
+        delete payload._id;
+      }
+
+      if (isWatch) {
+        delete payload.fragranceType;
+      } else {
+        delete payload.watchType;
+      }
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
@@ -379,7 +559,8 @@ function Admin() {
         handleCancelForm();
         fetchAllData();
       } else {
-        alert("Server responded with error. Please check backend.");
+        const errorData = await res.json().catch(() => ({}));
+        alert(errorData.message || "Server responded with error. Please check backend.");
       }
     } catch (err) {
       console.error("Error submitting product:", err);
@@ -440,10 +621,13 @@ function Admin() {
         : "http://127.0.0.1:5000/api/brands";
       const method = isEdit ? "PUT" : "POST";
 
+      const payload = { ...brandForm };
+      if (!isEdit || !payload._id) delete payload._id;
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(brandForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (res.ok) {
@@ -522,10 +706,13 @@ function Admin() {
         : "http://127.0.0.1:5000/api/categories";
       const method = isEdit ? "PUT" : "POST";
 
+      const payload = { ...categoryForm };
+      if (!isEdit || !payload._id) delete payload._id;
+
       const res = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(categoryForm)
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (res.ok) {
@@ -1173,7 +1360,13 @@ function Admin() {
                   <small className="text-muted">{filteredUsers.length} total user accounts in database</small>
                 </div>
                 <div className="d-flex align-items-center gap-2">
-                  <label className="small text-muted mb-0 fw-semibold">Filter:</label>
+                  <button
+                    className="btn btn-sm admin-btn-ocean d-flex align-items-center gap-1"
+                    onClick={openAddUserModal}
+                  >
+                    <FiUserPlus /> Add Customer
+                  </button>
+                  <label className="small text-muted mb-0 fw-semibold ms-2">Filter:</label>
                   <select
                     className="form-select form-select-sm"
                     style={{ width: "150px" }}
@@ -1242,9 +1435,17 @@ function Admin() {
                               </span>
                             </td>
                             <td className="text-end">
-                              {/* Toggle Block / Unblock Button */}
+                              {/* Edit, Toggle Block & Delete Buttons */}
                               {u.role !== "admin" ? (
                                 <>
+                                  <button
+                                    className="btn btn-sm btn-outline-primary me-2"
+                                    onClick={() => openEditUserModal(u)}
+                                    title="Edit Customer"
+                                  >
+                                    <FiEdit2 size={13} />
+                                  </button>
+
                                   <button
                                     className={`btn btn-sm me-2 ${isBlocked ? "btn-outline-success" : "btn-outline-warning"
                                       }`}
@@ -1452,17 +1653,82 @@ function Admin() {
                           />
                         </div>
 
-                        <div className="col-md-6">
-                          <label className="form-label small fw-semibold text-muted">Image Path or URL</label>
-                          <input
-                            type="text"
-                            className="form-control"
-                            name="image"
-                            placeholder="/assests/Products/..."
-                            value={productForm.image}
-                            onChange={handleInputChange}
-                            required
-                          />
+                        <div className="col-md-12">
+                          <label className="form-label small fw-semibold text-muted d-flex justify-content-between align-items-center mb-1">
+                            <span>Image Source or Photo *</span>
+                            <div className="d-flex gap-2">
+                              <label className="btn btn-sm btn-outline-primary mb-0 py-1 px-2" style={{ fontSize: "0.78rem", cursor: "pointer" }}>
+                                <FiUpload className="me-1" /> {isUploading ? "Uploading..." : "Upload from PC"}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  className="d-none"
+                                  onChange={handleImageFileUpload}
+                                  disabled={isUploading}
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-secondary py-1 px-2"
+                                style={{ fontSize: "0.78rem" }}
+                                onClick={() => setShowGalleryModal(true)}
+                              >
+                                <FiImage className="me-1" /> Choose from Gallery
+                              </button>
+                            </div>
+                          </label>
+
+                          <div className="input-group mb-2">
+                            <input
+                              type="text"
+                              className="form-control"
+                              name="image"
+                              placeholder="e.g. /assests/Products/Watches/Cartier Crash.jpg or https://..."
+                              value={productForm.image}
+                              onChange={(e) => {
+                                handleInputChange(e);
+                                setImageTestStatus("idle");
+                              }}
+                              required
+                            />
+                          </div>
+
+                          {/* Live Image Preview Card */}
+                          <div className="admin-img-preview-box">
+                            {productForm.image ? (
+                              <img
+                                src={productForm.image}
+                                alt="Live Preview"
+                                className="admin-preview-thumbnail"
+                                onLoad={() => setImageTestStatus("loaded")}
+                                onError={() => setImageTestStatus("error")}
+                              />
+                            ) : (
+                              <div className="admin-preview-thumbnail d-flex align-items-center justify-content-center text-muted" style={{ fontSize: "0.7rem", textAlign: "center" }}>
+                                No Image
+                              </div>
+                            )}
+                            <div className="flex-grow-1">
+                              {imageTestStatus === "loaded" && (
+                                <div className="text-success small fw-semibold d-flex align-items-center gap-1">
+                                  <FiCheckCircle /> Image verified & loaded correctly
+                                </div>
+                              )}
+                              {imageTestStatus === "error" && (
+                                <div className="text-danger small fw-semibold d-flex align-items-center gap-1">
+                                  <FiAlertCircle /> File not found at this path. Click "Upload from PC" or "Choose from Gallery".
+                                </div>
+                              )}
+                              {imageTestStatus === "idle" && (
+                                <div className="text-muted small">
+                                  {productForm.image ? "Checking image preview..." : "Paste a file path/URL, upload from your PC, or select from gallery above."}
+                                </div>
+                              )}
+                              <small className="text-muted d-block text-truncate" style={{ maxWidth: "450px" }}>
+                                Current source: <code>{productForm.image || "None"}</code>
+                              </small>
+                            </div>
+                          </div>
                         </div>
 
                         <div className="col-md-3">
@@ -1588,7 +1854,8 @@ function Admin() {
                                 alt={item.name}
                                 className="admin-product-thumb"
                                 onError={(e) => {
-                                  e.target.src = "https://placehold.co/80x80/0F4C81/FFFFFF?text=Item";
+                                  e.target.onerror = null;
+                                  e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&auto=format&fit=crop";
                                 }}
                               />
                               <div>
@@ -1617,14 +1884,17 @@ function Admin() {
                             </small>
                           </td>
                           <td>
-                            <span
-                              className={`badge rounded-pill ${item.inStock !== false
+                            <button
+                              type="button"
+                              className={`btn btn-sm stock-toggle-btn badge rounded-pill border-0 py-1 px-2 ${item.inStock !== false
                                   ? "bg-success-subtle text-success"
                                   : "bg-danger-subtle text-danger"
                                 }`}
+                              onClick={() => handleQuickToggleStock(item)}
+                              title="Click to toggle stock status"
                             >
-                              {item.inStock !== false ? "In Stock" : "Out of Stock"}
-                            </span>
+                              {item.inStock !== false ? "● In Stock" : "○ Out of Stock"}
+                            </button>
                           </td>
                           <td className="text-end">
                             <button
@@ -1878,9 +2148,20 @@ function Admin() {
                                 </span>
                               </div>
                             </div>
-                            <span className="badge bg-light text-muted border" style={{ fontSize: "0.7rem" }}>
-                              #ORD-{rev.orderId.slice(-6).toUpperCase()}
-                            </span>
+                            <div className="d-flex align-items-center gap-2">
+                              <span className="badge bg-light text-muted border" style={{ fontSize: "0.7rem" }}>
+                                #ORD-{rev.orderId.slice(-6).toUpperCase()}
+                              </span>
+                              <button
+                                type="button"
+                                className="btn btn-sm btn-outline-danger py-0 px-2 d-flex align-items-center gap-1"
+                                style={{ fontSize: "0.7rem" }}
+                                onClick={() => handleDeleteReview(rev.orderId, rev.itemIndex)}
+                                title="Delete Customer Review"
+                              >
+                                <FiTrash2 size={11} /> Delete
+                              </button>
+                            </div>
                           </div>
 
                           {rev.review ? (
@@ -2191,6 +2472,158 @@ function Admin() {
                 </button>
                 <button type="submit" className="btn btn-sm btn-dark px-4">
                   {isEditingCategory ? "Save Changes" : "Create Category"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 3. BOUTIQUE GALLERY IMAGE PICKER MODAL */}
+      {showGalleryModal && (
+        <div className="admin-modal-backdrop">
+          <div className="admin-modal-card" style={{ maxWidth: "600px" }}>
+            <div className="admin-modal-header d-flex justify-content-between align-items-center">
+              <div>
+                <h6 className="admin-modal-title mb-0">Boutique Image Gallery</h6>
+                <small className="text-muted">Click any photo to attach it directly to this product</small>
+              </div>
+              <button
+                className="btn btn-sm btn-close"
+                onClick={() => setShowGalleryModal(false)}
+              />
+            </div>
+            <div className="p-4">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <span className="small text-muted fw-semibold">
+                  Available Catalog Photos ({catalogImages.length})
+                </span>
+                <span className="badge bg-light text-dark border">
+                  Showing: {formType === "watch" ? "Watches Collection" : "Fragrance Collection"}
+                </span>
+              </div>
+              <div className="admin-gallery-grid">
+                {catalogImages
+                  .filter(img => formType === "watch" ? img.categoryType === "watch" : img.categoryType === "fragrance")
+                  .map((img, i) => (
+                    <div
+                      key={i}
+                      className={`admin-gallery-item ${productForm.image === img.path ? "selected" : ""}`}
+                      onClick={() => {
+                        setProductForm(prev => ({ ...prev, image: img.path }));
+                        setImageTestStatus("loaded");
+                        setShowGalleryModal(false);
+                      }}
+                      title={img.name}
+                    >
+                      <img src={img.path} alt={img.name} />
+                      <span className="admin-gallery-item-name">{img.name}</span>
+                    </div>
+                  ))}
+              </div>
+              <div className="text-end mt-3">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-secondary"
+                  onClick={() => setShowGalleryModal(false)}
+                >
+                  Close Gallery
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 4. ADD / EDIT USER MODAL */}
+      {showUserModal && (
+        <div className="admin-modal-backdrop">
+          <div className="admin-modal-card">
+            <div className="admin-modal-header d-flex justify-content-between align-items-center">
+              <h6 className="admin-modal-title mb-0">
+                {isEditingUser ? "Edit Customer Account" : "Add New Customer Account"}
+              </h6>
+              <button
+                className="btn btn-sm btn-close"
+                onClick={() => setShowUserModal(false)}
+              />
+            </div>
+            <form onSubmit={handleSaveUser} className="p-4">
+              <div className="mb-3">
+                <label className="form-label small fw-semibold text-muted">FULL NAME *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g. Eleanor Vance"
+                  value={userForm.name}
+                  onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                  required
+                  autoFocus
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label small fw-semibold text-muted">EMAIL ADDRESS *</label>
+                <input
+                  type="email"
+                  className="form-control"
+                  placeholder="e.g. client@example.com"
+                  value={userForm.email}
+                  onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="mb-3">
+                <label className="form-label small fw-semibold text-muted">
+                  {isEditingUser ? "NEW PASSWORD (leave blank to keep unchanged)" : "PASSWORD *"}
+                </label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder={isEditingUser ? "Leave blank to keep current password" : "Enter account password"}
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                  required={!isEditingUser}
+                />
+              </div>
+
+              <div className="row g-3 mb-4">
+                <div className="col-md-6">
+                  <label className="form-label small fw-semibold text-muted">ACCOUNT ROLE</label>
+                  <select
+                    className="form-select"
+                    value={userForm.role}
+                    onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                  >
+                    <option value="user">Customer (user)</option>
+                    <option value="admin">Administrator (admin)</option>
+                  </select>
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label small fw-semibold text-muted">ACCOUNT STATUS</label>
+                  <select
+                    className="form-select"
+                    value={userForm.status}
+                    onChange={(e) => setUserForm({ ...userForm, status: e.target.value })}
+                  >
+                    <option value="active">Active</option>
+                    <option value="blocked">Blocked / Suspended</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="d-flex justify-content-end gap-2">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary px-3"
+                  onClick={() => setShowUserModal(false)}
+                >
+                  Cancel
+                </button>
+                <button type="submit" className="btn btn-sm admin-btn-ocean px-4">
+                  {isEditingUser ? "Save Account" : "Create Account"}
                 </button>
               </div>
             </form>

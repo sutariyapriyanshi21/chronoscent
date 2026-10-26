@@ -27,20 +27,113 @@
 }
 
 /* ===========================
-   CATEGORY HEADING
+   CATEGORY HEADING & SLIDER ROW
 =========================== */
-.brand-heading {
-    text-align: left;
-    margin: 60px 0 40px;
+.brand-heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 60px 0 25px;
     padding-bottom: 15px;
-    font-size: 28px;
-    font-weight: 500;
-    color: var(--color-primary);
     border-bottom: 1px solid var(--color-border);
 }
 
+.brand-heading-row .brand-heading {
+    margin: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--color-primary);
+}
+
+.brand-slider-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-slider-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 2px 6px rgba(15, 76, 129, 0.05);
+}
+
+.brand-slider-btn:hover:not(:disabled) {
+    background: var(--color-primary);
+    color: #FFFFFF;
+    border-color: var(--color-primary);
+    transform: scale(1.08);
+}
+
+.brand-slider-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
+}
+
 /* ===========================
-   GRID
+   SLIDER TRACK & CARDS
+=========================== */
+.brand-slider-track {
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 10px 4px 20px;
+    margin: 0 -4px;
+}
+
+.brand-slider-track::-webkit-scrollbar {
+    display: none;
+}
+
+.brand-slider-track .brand-card {
+    flex: 0 0 calc((100% - 96px) / 5);
+    min-width: 200px;
+    text-decoration: none;
+}
+
+.brand-monogram {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #F8FAFC;
+    border: 1.5px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-heading, serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 1px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.35s ease;
+}
+
+.brand-card:hover .brand-monogram {
+    border-color: var(--color-primary);
+    background: #EFF6FF;
+    transform: scale(1.05);
+}
+
+/* ===========================
+   LEGACY GRID (FALLBACK)
 =========================== */
 .brand-grid {
     display: grid;
@@ -162,18 +255,23 @@
 =========================== */
 @media(max-width: 1200px) {
     .brand-grid { grid-template-columns: repeat(4, 1fr); }
+    .brand-slider-track .brand-card { flex: 0 0 calc((100% - 72px) / 4); }
 }
 
 @media(max-width: 992px) {
     .brand-grid { grid-template-columns: repeat(3, 1fr); }
+    .brand-slider-track .brand-card { flex: 0 0 calc((100% - 48px) / 3); }
 }
 
 @media(max-width: 768px) {
     .brand-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .brand-heading { font-size: 24px; }
+    .brand-slider-track .brand-card { flex: 0 0 calc((100% - 20px) / 2); }
+    .brand-heading-row .brand-heading { font-size: 22px; }
+    .brand-slider-btn { width: 34px; height: 34px; font-size: 1.2rem; }
 }
 
 @media(max-width: 500px) {
     .brand-grid { grid-template-columns: 1fr; }
+    .brand-slider-track .brand-card { flex: 0 0 85%; }
     .brand-card { min-height: 240px; }
 }

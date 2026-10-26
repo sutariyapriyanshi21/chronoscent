@@ -694,3 +694,85 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ========================================================
+   10. IMAGE PREVIEW, GALLERY & CRUD ENHANCEMENTS
+   ======================================================== */
+.admin-img-preview-box {
+  background: #F8FAFC;
+  border: 1.5px dashed var(--admin-border);
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.admin-preview-thumbnail {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--admin-border);
+  background: #FFFFFF;
+}
+
+.admin-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 12px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.admin-gallery-item {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  padding: 6px;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.admin-gallery-item:hover {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  transform: translateY(-2px);
+}
+
+.admin-gallery-item.selected {
+  background: #EFF6FF;
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 1px var(--admin-primary);
+}
+
+.admin-gallery-item img {
+  width: 100%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  background: #FFFFFF;
+}
+
+.admin-gallery-item-name {
+  font-size: 0.7rem;
+  color: #334155;
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.stock-toggle-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.stock-toggle-btn:hover {
+  filter: brightness(0.95);
+  transform: scale(1.05);
+}

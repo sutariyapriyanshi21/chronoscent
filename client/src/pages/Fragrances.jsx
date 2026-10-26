@@ -1,4 +1,5 @@
-import { useMemo, useState, useEffect } from "react"; // <-- Added useEffect
+import { useMemo, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import FragranceSearch from "../components/Fragerences/FragranceSearch";
 import FragranceFilters from "../components/Fragerences/FragranceFilters";
@@ -9,6 +10,7 @@ import staticFragrances from "../Data/fragerence";
 import "../css/Watches.css"; // Note: reuse same css
 
 function Fragrances() {
+  const [searchParams] = useSearchParams();
   const [fragrances, setFragrances] = useState([]); // <-- State to hold fragrances from database
 
   const [dbBrands, setDbBrands] = useState([]);
@@ -53,6 +55,15 @@ function Fragrances() {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedGenders, setSelectedGenders] = useState([]);
   const [selectedStyles, setSelectedStyles] = useState([]);
+
+  // Sync brand from URL query params (e.g. /fragrances?brand=Chanel)
+  useEffect(() => {
+    const brandParam = searchParams.get("brand");
+    if (brandParam) {
+      setSelectedBrands([brandParam]);
+      window.scrollTo({ top: 350, behavior: "smooth" });
+    }
+  }, [searchParams]);
 
   /* ================================
      SEARCH & SORT STATES
