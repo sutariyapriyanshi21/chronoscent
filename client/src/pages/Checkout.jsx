@@ -109,7 +109,7 @@ function Checkout() {
                       <label className="form-label mb-0">Full Name</label>
                       {formData.name && (
                         <small className="text-success fw-semibold" style={{ fontSize: "0.75rem" }}>
-                          ✓ Auto-filled
+
                         </small>
                       )}
                     </div>
@@ -127,7 +127,7 @@ function Checkout() {
                       <label className="form-label mb-0">Email Address</label>
                       {formData.email && (
                         <small className="text-success fw-semibold" style={{ fontSize: "0.75rem" }}>
-                          ✓ Account Email
+
                         </small>
                       )}
                     </div>
