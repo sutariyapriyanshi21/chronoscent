@@ -1855,7 +1855,9 @@ function Admin() {
                                 className="admin-product-thumb"
                                 onError={(e) => {
                                   e.target.onerror = null;
-                                  e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&auto=format&fit=crop";
+                                  e.target.src = item.productCategory === "fragrance"
+                                    ? "https://images.unsplash.com/photo-1541643600914-78b084683601?w=100&auto=format&fit=crop"
+                                    : "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=100&auto=format&fit=crop";
                                 }}
                               />
                               <div>
@@ -2125,12 +2127,20 @@ function Admin() {
                         <div className="p-3 border rounded-3 bg-white shadow-sm h-100 d-flex flex-column">
                           <div className="d-flex align-items-start gap-3 mb-2">
                             <img
-                              src={rev.productImage || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100"}
+                              src={
+                                rev.productImage ||
+                                (/perfume|fragrance|eau|parfum|chanel|creed|dior|versace|tom ford/i.test(rev.productName || "")
+                                  ? "https://images.unsplash.com/photo-1541643600914-78b084683601?w=100&auto=format&fit=crop"
+                                  : "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=100&auto=format&fit=crop")
+                              }
                               alt={rev.productName}
                               style={{ width: "55px", height: "55px", objectFit: "cover", borderRadius: "8px", border: "1px solid #e2e8f0" }}
                               onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100";
+                                const isPerfume = /perfume|fragrance|eau|parfum|chanel|creed|dior|versace|tom ford/i.test(rev.productName || "");
+                                e.target.src = isPerfume
+                                  ? "https://images.unsplash.com/photo-1541643600914-78b084683601?w=100&auto=format&fit=crop"
+                                  : "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=100&auto=format&fit=crop";
                               }}
                             />
                             <div className="flex-grow-1">

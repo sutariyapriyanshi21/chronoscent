@@ -14,7 +14,87 @@ import {
   FiRefreshCw
 } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
+import staticWatches from "../Data/Watches";
+import staticFragrances from "../Data/fragerence";
 import "../css/MyOrders.css";
+
+// Helper to resolve an item's product image reliably
+const resolveItemImage = (item) => {
+  if (!item) return "";
+
+  // 1. If item has a full HTTP/HTTPS URL or data/blob URL
+  if (item.image && typeof item.image === "string") {
+    if (
+      item.image.startsWith("http://") ||
+      item.image.startsWith("https://") ||
+      item.image.startsWith("data:") ||
+      item.image.startsWith("blob:")
+    ) {
+      return item.image;
+    }
+  }
+
+  // 2. Look up product in static catalog by name first (always reliable, local Vite bundle)
+  if (item.name) {
+    const cleanName = item.name.toLowerCase().trim();
+    const watchMatch = staticWatches.find(
+      (w) => w.name && w.name.toLowerCase().trim() === cleanName
+    );
+    if (watchMatch?.image) return watchMatch.image;
+
+    const fragranceMatch = staticFragrances.find(
+      (f) => f.name && f.name.toLowerCase().trim() === cleanName
+    );
+    if (fragranceMatch?.image) return fragranceMatch.image;
+  }
+
+  // 3. If item.image is a relative path (e.g. /assests/...)
+  if (item.image && typeof item.image === "string" && item.image.trim()) {
+    return item.image;
+  }
+
+  return "";
+};
+
+// Robust onError handler that never shows the wrong placeholder
+const handleItemImageError = (e, item) => {
+  e.target.onerror = null; // Prevent infinite loops
+
+  // 1. Try static catalog lookup by product name
+  if (item?.name) {
+    const cleanName = item.name.toLowerCase().trim();
+    const watchMatch = staticWatches.find(
+      (w) => w.name && w.name.toLowerCase().trim() === cleanName
+    );
+    if (watchMatch?.image && e.target.src !== watchMatch.image) {
+      e.target.src = watchMatch.image;
+      return;
+    }
+
+    const fragranceMatch = staticFragrances.find(
+      (f) => f.name && f.name.toLowerCase().trim() === cleanName
+    );
+    if (fragranceMatch?.image && e.target.src !== fragranceMatch.image) {
+      e.target.src = fragranceMatch.image;
+      return;
+    }
+  }
+
+  // 2. If it's a relative /assests path that failed on the frontend, try backend port 5000
+  if (item?.image && typeof item.image === "string" && item.image.startsWith("/assests") && !e.target.src.includes(":5000")) {
+    e.target.src = `http://127.0.0.1:5000${item.image}`;
+    return;
+  }
+
+  // 3. Fallback to appropriate category image if name couldn't be matched
+  const isFragrance =
+    item?.type === "fragrance" ||
+    /perfume|fragrance|eau|parfum|chanel|creed|dior|versace|tom ford/i.test(item?.name || "");
+
+  e.target.src = isFragrance
+    ? "https://images.unsplash.com/photo-1541643600914-78b084683601?w=200&auto=format&fit=crop"
+    : "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200&auto=format&fit=crop";
+};
 
 function MyOrders() {
   const [currentUser, setCurrentUser] = useState(() => {
@@ -555,13 +635,10 @@ function MyOrders() {
                         <div className="order-item-row" key={idx}>
                           <div className="order-item-details">
                             <img
-                              src={item.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150"}
+                              src={resolveItemImage(item) || "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200"}
                               alt={item.name}
                               className="order-item-img"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150";
-                              }}
+                              onError={(e) => handleItemImageError(e, item)}
                             />
                             <div>
                               <div className="order-item-title">{item.name}</div>
@@ -830,9 +907,10 @@ function MyOrders() {
               <form onSubmit={handleSubmitReview}>
                 <div className="modal-body p-4 text-center">
                   <img
-                    src={reviewModalData.item.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150"}
+                    src={resolveItemImage(reviewModalData.item) || "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=200"}
                     alt={reviewModalData.item.name}
                     style={{ width: "80px", height: "80px", objectFit: "cover", borderRadius: "10px", border: "1px solid #e2e8f0" }}
+                    onError={(e) => handleItemImageError(e, reviewModalData.item)}
                   />
                   <h5 className="mt-2 mb-1 font-heading text-dark">
                     {reviewModalData.item.name}
